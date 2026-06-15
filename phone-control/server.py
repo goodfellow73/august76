@@ -3,16 +3,38 @@ import base64
 import io
 import json
 import os
+import secrets
 import subprocess
 from typing import Optional
 
 import anthropic
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.base import BaseHTTPMiddleware
+from fastapi.responses import HTMLResponse, JSONResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
+# Generate a random token on startup — printed to terminal, never stored in code
+_TOKEN = os.environ.get("PHONE_CONTROL_TOKEN") or secrets.token_urlsafe(24)
+
 app = FastAPI(title="Phone Control")
+
+
+class TokenAuthMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        # Allow the root page through so the browser can load the UI
+        if request.url.path == "/":
+            return await call_next(request)
+        token = (
+            request.headers.get("X-Token")
+            or request.query_params.get("token")
+        )
+        if not secrets.compare_digest(token or "", _TOKEN):
+            return Response("Unauthorized", status_code=401)
+        return await call_next(request)
+
+
+app.add_middleware(TokenAuthMiddleware)
 
 # ---------------------------------------------------------------------------
 # ADB helpers
@@ -338,4 +360,7 @@ def index():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8765, reload=False)
+    print(f"\n  Access token: {_TOKEN}")
+    print(f"  Open: http://localhost:8765/?token={_TOKEN}\n")
+    # Bind to localhost only — not accessible from other machines on the network
+    uvicorn.run(app, host="127.0.0.1", port=8765, reload=False)
