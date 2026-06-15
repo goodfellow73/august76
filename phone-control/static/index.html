@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Phone Control</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #0f0f11;
+    color: #e0e0e0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    background: #1a1a1f;
+    border-bottom: 1px solid #2a2a35;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  header h1 { font-size: 16px; font-weight: 600; color: #fff; }
+
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #555;
+    flex-shrink: 0;
+  }
+  .status-dot.connected { background: #4ade80; }
+  .status-dot.error { background: #f87171; }
+
+  #status-text { font-size: 12px; color: #888; }
+
+  .layout {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* ---- Phone screen ---- */
+  .screen-panel {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background: #0f0f11;
+    border-right: 1px solid #2a2a35;
+    gap: 12px;
+  }
+
+  .phone-frame {
+    position: relative;
+    border-radius: 28px;
+    border: 3px solid #333;
+    overflow: hidden;
+    background: #000;
+    box-shadow: 0 0 40px rgba(0,0,0,.6);
+    cursor: crosshair;
+  }
+
+  .phone-frame img {
+    display: block;
+    max-height: calc(100vh - 160px);
+    max-width: 340px;
+    width: 100%;
+    object-fit: contain;
+    user-select: none;
+    pointer-events: none;
+  }
+
+  .tap-ripple {
+    position: absolute;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: 2px solid #60a5fa;
+    transform: translate(-50%, -50%) scale(0);
+    pointer-events: none;
+    animation: ripple .4s ease-out forwards;
+  }
+  @keyframes ripple {
+    to { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+  }
+
+  .screen-controls {
+    display: flex;
+    gap: 8px;
+  }
+
+  .btn {
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1px solid #333;
+    background: #1e1e28;
+    color: #ccc;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background .15s;
+  }
+  .btn:hover { background: #2a2a38; color: #fff; }
+  .btn.primary { background: #2563eb; border-color: #3b82f6; color: #fff; }
+  .btn.primary:hover { background: #3b82f6; }
+  .btn.danger { background: #7f1d1d; border-color: #ef4444; color: #fca5a5; }
+  .btn.danger:hover { background: #991b1b; }
+
+  .refresh-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .refresh-row label { font-size: 11px; color: #666; }
+  .refresh-row input[type=range] { width: 80px; }
+
+  /* ---- Right panel ---- */
+  .right-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid #2a2a35;
+    background: #141418;
+  }
+  .tab {
+    padding: 10px 18px;
+    font-size: 13px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    color: #777;
+    transition: color .15s;
+  }
+  .tab.active { color: #fff; border-bottom-color: #3b82f6; }
+  .tab:hover { color: #ccc; }
+
+  .tab-panel { display: none; flex: 1; overflow: auto; padding: 16px; flex-direction: column; }
+  .tab-panel.active { display: flex; }
+
+  /* ---- AI panel ---- */
+  .ai-messages {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding-right: 4px;
+  }
+
+  .msg {
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+    max-width: 100%;
+    word-break: break-word;
+  }
+  .msg.user { background: #1e3a5f; align-self: flex-end; color: #bfdbfe; border-bottom-right-radius: 3px; }
+  .msg.assistant { background: #1a1a24; border: 1px solid #2a2a35; align-self: flex-start; border-bottom-left-radius: 3px; }
+  .msg.system { background: #1a2a1a; border: 1px solid #2d3f2d; align-self: center; color: #86efac; font-size: 11px; }
+  .msg.error { background: #2a1a1a; border: 1px solid #3f2d2d; color: #fca5a5; }
+
+  .ai-input-row {
+    display: flex;
+    gap: 8px;
+  }
+  .ai-input-row input {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #333;
+    background: #1a1a24;
+    color: #e0e0e0;
+    font-size: 13px;
+    outline: none;
+  }
+  .ai-input-row input:focus { border-color: #3b82f6; }
+
+  /* ---- Manual panel ---- */
+  .manual-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .field-group label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: .05em; }
+  .field-group input, .field-group textarea {
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #333;
+    background: #1a1a24;
+    color: #e0e0e0;
+    font-size: 13px;
+    outline: none;
+    font-family: inherit;
+  }
+  .field-group input:focus, .field-group textarea:focus { border-color: #3b82f6; }
+  .field-group textarea { resize: vertical; min-height: 60px; }
+
+  .row { display: flex; gap: 8px; }
+  .row input { flex: 1; }
+
+  .key-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+  .key-btn {
+    padding: 8px 4px;
+    font-size: 11px;
+    text-align: center;
+    cursor: pointer;
+    background: #1e1e28;
+    border: 1px solid #333;
+    border-radius: 6px;
+    color: #ccc;
+    transition: background .15s;
+  }
+  .key-btn:hover { background: #2a2a38; color: #fff; }
+
+  /* ---- Shell panel ---- */
+  .shell-input-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .shell-input-row input {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #333;
+    background: #1a1a24;
+    color: #e0e0e0;
+    font-size: 13px;
+    font-family: monospace;
+    outline: none;
+  }
+  .shell-input-row input:focus { border-color: #3b82f6; }
+  .shell-output {
+    flex: 1;
+    background: #0a0a10;
+    border: 1px solid #2a2a35;
+    border-radius: 8px;
+    padding: 12px;
+    font-family: monospace;
+    font-size: 12px;
+    color: #86efac;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="status-dot" id="status-dot"></div>
+  <h1>Phone Control</h1>
+  <span id="status-text">Connecting...</span>
+  <span style="margin-left:auto;font-size:11px;color:#444" id="device-info"></span>
+</header>
+
+<div class="layout">
+  <!-- Phone screen -->
+  <div class="screen-panel">
+    <div class="phone-frame" id="phone-frame">
+      <img id="screen-img" src="" alt="Phone screen" />
+    </div>
+
+    <div class="screen-controls">
+      <!-- Home / Back / Recents -->
+      <button class="btn" onclick="pressKey('KEYCODE_BACK')">◁ Back</button>
+      <button class="btn" onclick="pressKey('KEYCODE_HOME')">○ Home</button>
+      <button class="btn" onclick="pressKey('KEYCODE_APP_SWITCH')">□ Recent</button>
+    </div>
+
+    <div class="refresh-row">
+      <button class="btn primary" onclick="refreshScreen()">Refresh</button>
+      <label>Auto:</label>
+      <input type="range" id="auto-interval" min="0" max="5" step="1" value="0" oninput="setAutoRefresh(this.value)" />
+      <span id="auto-label" style="font-size:11px;color:#666">Off</span>
+    </div>
+  </div>
+
+  <!-- Right panel -->
+  <div class="right-panel">
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('ai')">AI Control</div>
+      <div class="tab" onclick="switchTab('manual')">Manual</div>
+      <div class="tab" onclick="switchTab('shell')">Shell</div>
+    </div>
+
+    <!-- AI tab -->
+    <div class="tab-panel active" id="tab-ai">
+      <div class="ai-messages" id="ai-messages">
+        <div class="msg system">Tell Claude what to do on your phone. Example: "Open Chrome and search for weather"</div>
+      </div>
+      <div class="ai-input-row">
+        <input type="text" id="ai-input" placeholder="What should I do on your phone?" onkeydown="if(event.key==='Enter') sendAI()" />
+        <button class="btn primary" onclick="sendAI()" id="ai-btn">Send</button>
+      </div>
+    </div>
+
+    <!-- Manual tab -->
+    <div class="tab-panel" id="tab-manual">
+      <div class="manual-grid">
+        <div class="field-group">
+          <label>Type Text</label>
+          <div class="row">
+            <input type="text" id="type-input" placeholder="Text to type..." onkeydown="if(event.key==='Enter') typeText()" />
+            <button class="btn primary" onclick="typeText()">Type</button>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>Tap (pixel coordinates)</label>
+          <div class="row">
+            <input type="number" id="tap-x" placeholder="X" />
+            <input type="number" id="tap-y" placeholder="Y" />
+            <button class="btn primary" onclick="manualTap()">Tap</button>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>Swipe</label>
+          <div class="row">
+            <input type="number" id="swipe-x1" placeholder="X1" />
+            <input type="number" id="swipe-y1" placeholder="Y1" />
+            <input type="number" id="swipe-x2" placeholder="X2" />
+            <input type="number" id="swipe-y2" placeholder="Y2" />
+            <button class="btn primary" onclick="swipe()">Swipe</button>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>Quick Keys</label>
+          <div class="key-grid">
+            <div class="key-btn" onclick="pressKey('KEYCODE_HOME')">Home</div>
+            <div class="key-btn" onclick="pressKey('KEYCODE_BACK')">Back</div>
+            <div class="key-btn" onclick="pressKey('KEYCODE_APP_SWITCH')">Recent</div>
+            <div class="key-btn" onclick="pressKey('KEYCODE_ENTER')">Enter</div>
+            <div class="key-btn" onclick="pressKey('KEYCODE_DEL')">Delete</div>
+            <div class="key-btn" onclick="pressKey('KEYCODE_VOLUME_UP')">Vol+</div>
+            <div class="key-btn" onclick="pressKey('KEYCODE_VOLUME_DOWN')">Vol-</div>
+            <div class="key-btn" onclick="pressKey('KEYCODE_POWER')">Power</div>
+            <div class="key-btn" onclick="pressKey('KEYCODE_MEDIA_PLAY_PAUSE')">Play/Pause</div>
+            <div class="key-btn" onclick="pressKey('KEYCODE_MEDIA_NEXT')">Next</div>
+            <div class="key-btn" onclick="pressKey('KEYCODE_MEDIA_PREVIOUS')">Prev</div>
+            <div class="key-btn" onclick="pressKey('KEYCODE_WAKEUP')">Wake</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shell tab -->
+    <div class="tab-panel" id="tab-shell">
+      <div class="shell-input-row">
+        <input type="text" id="shell-input" placeholder="adb shell command..." onkeydown="if(event.key==='Enter') runShell()" />
+        <button class="btn primary" onclick="runShell()">Run</button>
+        <button class="btn" onclick="document.getElementById('shell-output').textContent=''">Clear</button>
+      </div>
+      <div class="shell-output" id="shell-output">$ </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---- State ----
+let phoneW = 0, phoneH = 0;
+let autoTimer = null;
+
+// ---- Init ----
+async function init() {
+  await checkDevices();
+  await loadScreenSize();
+  await refreshScreen();
+}
+
+async function checkDevices() {
+  try {
+    const r = await fetch('/api/devices');
+    const data = await r.json();
+    if (data.devices && data.devices.length > 0) {
+      setStatus('connected', 'Connected');
+      document.getElementById('device-info').textContent = data.devices[0];
+    } else {
+      setStatus('error', 'No device found — connect your phone via USB');
+    }
+  } catch (e) {
+    setStatus('error', 'Server unreachable');
+  }
+}
+
+async function loadScreenSize() {
+  try {
+    const r = await fetch('/api/screen-size');
+    const data = await r.json();
+    phoneW = data.width;
+    phoneH = data.height;
+  } catch {}
+}
+
+// ---- Screen ----
+async function refreshScreen() {
+  try {
+    const r = await fetch('/api/screenshot');
+    const data = await r.json();
+    if (data.image) {
+      document.getElementById('screen-img').src = 'data:image/png;base64,' + data.image;
+    }
+  } catch (e) {
+    setStatus('error', 'Screenshot failed');
+  }
+}
+
+function setAutoRefresh(val) {
+  const intervals = [0, 1, 2, 3, 5, 10];
+  const secs = intervals[parseInt(val)];
+  const label = secs === 0 ? 'Off' : secs + 's';
+  document.getElementById('auto-label').textContent = label;
+  if (autoTimer) clearInterval(autoTimer);
+  if (secs > 0) autoTimer = setInterval(refreshScreen, secs * 1000);
+}
+
+// Click on screen = tap
+document.getElementById('phone-frame').addEventListener('click', async (e) => {
+  const img = document.getElementById('screen-img');
+  const rect = img.getBoundingClientRect();
+  const relX = (e.clientX - rect.left) / rect.width;
+  const relY = (e.clientY - rect.top) / rect.height;
+
+  if (phoneW === 0 || phoneH === 0) return;
+  const x = Math.round(relX * phoneW);
+  const y = Math.round(relY * phoneH);
+
+  // Ripple effect
+  const ripple = document.createElement('div');
+  ripple.className = 'tap-ripple';
+  ripple.style.left = (e.clientX - rect.left) + 'px';
+  ripple.style.top = (e.clientY - rect.top) + 'px';
+  document.getElementById('phone-frame').appendChild(ripple);
+  setTimeout(() => ripple.remove(), 500);
+
+  try {
+    await fetch('/api/tap', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({x, y}) });
+    setTimeout(refreshScreen, 300);
+  } catch {}
+});
+
+// ---- Manual controls ----
+async function manualTap() {
+  const x = parseFloat(document.getElementById('tap-x').value);
+  const y = parseFloat(document.getElementById('tap-y').value);
+  if (isNaN(x) || isNaN(y)) return;
+  await fetch('/api/tap', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({x, y}) });
+  setTimeout(refreshScreen, 300);
+}
+
+async function swipe() {
+  const x1 = parseFloat(document.getElementById('swipe-x1').value);
+  const y1 = parseFloat(document.getElementById('swipe-y1').value);
+  const x2 = parseFloat(document.getElementById('swipe-x2').value);
+  const y2 = parseFloat(document.getElementById('swipe-y2').value);
+  await fetch('/api/swipe', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({x1,y1,x2,y2}) });
+  setTimeout(refreshScreen, 500);
+}
+
+async function typeText() {
+  const text = document.getElementById('type-input').value;
+  if (!text) return;
+  await fetch('/api/type', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({text}) });
+}
+
+async function pressKey(keycode) {
+  await fetch('/api/key', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({keycode}) });
+  setTimeout(refreshScreen, 300);
+}
+
+// ---- Shell ----
+async function runShell() {
+  const cmd = document.getElementById('shell-input').value.trim();
+  if (!cmd) return;
+  const out = document.getElementById('shell-output');
+  out.textContent += `$ ${cmd}\n`;
+  try {
+    const r = await fetch('/api/shell', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({command: cmd}) });
+    const data = await r.json();
+    out.textContent += (data.output || data.error || '') + '\n';
+  } catch (e) {
+    out.textContent += `error: ${e}\n`;
+  }
+  out.scrollTop = out.scrollHeight;
+  document.getElementById('shell-input').value = '';
+}
+
+// ---- AI ----
+async function sendAI() {
+  const input = document.getElementById('ai-input');
+  const instruction = input.value.trim();
+  if (!instruction) return;
+
+  input.value = '';
+  addMsg('user', instruction);
+
+  const btn = document.getElementById('ai-btn');
+  btn.disabled = true;
+  btn.textContent = '...';
+
+  try {
+    const r = await fetch('/api/ai', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ instruction, max_steps: 15 }),
+    });
+
+    const reader = r.body.getReader();
+    const decoder = new TextDecoder();
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const lines = decoder.decode(value).split('\n').filter(Boolean);
+      for (const line of lines) {
+        try {
+          const event = JSON.parse(line);
+          if (event.error) {
+            addMsg('error', 'Error: ' + event.error);
+          } else if (event.text) {
+            addMsg('assistant', event.text);
+          } else if (event.action) {
+            addMsg('system', `Action: ${event.action}`);
+          } else if (event.done) {
+            addMsg('system', event.status === 'completed' ? 'Done!' : 'Reached step limit');
+            refreshScreen();
+          }
+        } catch {}
+      }
+    }
+  } catch (e) {
+    addMsg('error', 'Request failed: ' + e);
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Send';
+}
+
+function addMsg(type, text) {
+  const container = document.getElementById('ai-messages');
+  const div = document.createElement('div');
+  div.className = `msg ${type}`;
+  div.textContent = text;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+// ---- Tabs ----
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    const names = ['ai', 'manual', 'shell'];
+    t.classList.toggle('active', names[i] === name);
+  });
+  document.querySelectorAll('.tab-panel').forEach(p => {
+    p.classList.toggle('active', p.id === 'tab-' + name);
+  });
+}
+
+// ---- Status ----
+function setStatus(state, text) {
+  const dot = document.getElementById('status-dot');
+  dot.className = 'status-dot ' + state;
+  document.getElementById('status-text').textContent = text;
+}
+
+init();
+</script>
+</body>
+</html>
