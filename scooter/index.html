@@ -9,46 +9,47 @@
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
 <style>
-:root{--bg:#0b0c10;--card:#15171d;--card2:#1c1f27;--line:#262a34;--tx:#f4f5f7;--mut:#8b91a0;--ac:#ff6a1a;--ac2:#ff9a4d;--ok:#34d399;--bad:#ef4444}
+:root{--bg:#0b0c10;--card:#15171d;--card2:#1c1f27;--line:#262a34;--tx:#f4f5f7;--mut:#8b91a0;--ac:#ff6a1a;--ac2:#ff9a4d;--ok:#34d399;--warn:#f5b301;--bad:#ef4444;color-scheme:dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b0c10}}
+:root[data-theme="dark"]{--bg:#0b0c10}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-body{min-height:100vh;padding:max(16px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom));max-width:480px;margin:0 auto;background:radial-gradient(120% 60% at 50% -10%,#2a1608 0%,transparent 60%),var(--bg)}
-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
-h1{font-size:20px;margin:0;font-weight:700;letter-spacing:.2px}
+body{min-height:100vh;padding:max(16px,env(safe-area-inset-top)) 16px calc(96px + env(safe-area-inset-bottom));max-width:480px;margin:0 auto;background:radial-gradient(120% 50% at 50% -10%,#2a1608 0%,transparent 60%),var(--bg)}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+h1{font-size:20px;margin:0;font-weight:700}
+h2{font-size:22px;margin:4px 0 14px;font-weight:800}
 .sub{font-size:12px;color:var(--mut);margin-top:2px;display:flex;align-items:center;gap:6px}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--mut)}
 .dot.on{background:var(--ok);box-shadow:0 0 8px var(--ok)}
-.pill{border:1px solid var(--line);background:var(--card);color:var(--tx);border-radius:999px;padding:9px 16px;font-size:13px;font-weight:600}
-.pill:active{transform:scale(.96)}
+.dot.rec{background:var(--bad);box-shadow:0 0 8px var(--bad);animation:bl 1s infinite}
+@keyframes bl{50%{opacity:.3}}
+.pill{border:1px solid var(--line);background:var(--card);color:var(--tx);border-radius:999px;padding:9px 16px;font:inherit;font-size:13px;font-weight:600}
+button:active{transform:scale(.97)}
 .hero{position:relative;background:linear-gradient(160deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:28px;padding:18px 12px 20px;text-align:center;overflow:hidden}
 .gauge{width:100%;max-width:300px;margin:0 auto;display:block}
 .speed{position:absolute;left:0;right:0;top:92px;pointer-events:none}
 .speed b{font-size:64px;font-weight:800;letter-spacing:-2px;line-height:1}
 .speed span{display:block;color:var(--mut);font-size:13px;margin-top:2px}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
-.stat{padding:10px 4px}
-.stat b{display:block;font-size:20px;font-weight:700}
+.stat{padding:10px 4px}.stat b{display:block;font-size:20px;font-weight:700}
 .stat span{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.6px}
 .bat{height:6px;background:var(--line);border-radius:9px;margin:6px 18px 0;overflow:hidden}
-.bat i{display:block;height:100%;width:80%;background:linear-gradient(90deg,var(--ac),var(--ok));border-radius:9px;transition:width .6s}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.bat i{display:block;height:100%;background:linear-gradient(90deg,var(--ac),var(--ok));border-radius:9px;transition:width .6s}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
 .tile{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px;text-align:left;color:var(--tx);font:inherit;transition:.2s;display:flex;flex-direction:column;gap:14px;min-height:112px;justify-content:space-between}
-.tile:active{transform:scale(.97)}
-.tile svg{width:30px;height:30px;stroke:var(--mut);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:.2s}
+.tile svg{width:30px;height:30px;stroke:var(--mut);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .tile .t{font-weight:600;font-size:15px}.tile .s{font-size:12px;color:var(--mut);margin-top:2px}
 .tile.on{background:linear-gradient(150deg,#3a1d0b,#2a1608);border-color:#6b3513}
-.tile.on svg{stroke:var(--ac2)}
-.tile.on .s{color:var(--ac2)}
+.tile.on svg{stroke:var(--ac2)}.tile.on .s{color:var(--ac2)}
 .card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:18px;margin-top:12px}
-.row{display:flex;justify-content:space-between;align-items:baseline}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .lbl{font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.7px;font-weight:600}
 .big{font-size:30px;font-weight:800}.big small{font-size:14px;color:var(--mut);font-weight:600;margin-left:3px}
 .modes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;background:var(--bg);padding:5px;border-radius:16px}
-.modes button{border:0;background:transparent;color:var(--mut);padding:12px 0;border-radius:12px;font:inherit;font-weight:700;font-size:14px;transition:.2s}
+.modes button{border:0;background:transparent;color:var(--mut);padding:12px 0;border-radius:12px;font:inherit;font-weight:700;font-size:14px}
 .modes button.on{background:linear-gradient(135deg,var(--ac2),var(--ac));color:#fff;box-shadow:0 4px 16px rgba(255,106,26,.35)}
-input[type=range]{-webkit-appearance:none;width:100%;height:44px;background:transparent;margin:6px 0 0}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:44px;background:transparent;margin:6px 0 0}
 input[type=range]::-webkit-slider-runnable-track{height:8px;border-radius:9px;background:linear-gradient(90deg,var(--ac) var(--p,70%),var(--line) var(--p,70%))}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;background:#fff;margin-top:-11px;box-shadow:0 2px 10px rgba(0,0,0,.5)}
 input[type=range]::-moz-range-track{height:8px;border-radius:9px;background:var(--line)}
@@ -56,19 +57,38 @@ input[type=range]::-moz-range-progress{height:8px;border-radius:9px;background:v
 input[type=range]::-moz-range-thumb{width:30px;height:30px;border:0;border-radius:50%;background:#fff}
 .ticks{display:flex;justify-content:space-between;font-size:11px;color:var(--mut)}
 .note{font-size:12px;color:var(--mut);line-height:1.5;margin-top:10px}
-.apply{width:100%;margin-top:14px;border:0;border-radius:16px;padding:15px;font:inherit;font-weight:700;font-size:15px;color:#fff;background:linear-gradient(135deg,var(--ac2),var(--ac));box-shadow:0 6px 20px rgba(255,106,26,.3)}
-.apply:active{transform:scale(.98)}
-.bigbat{display:flex;align-items:baseline;gap:10px}.bigbat b{font-size:44px;font-weight:800;letter-spacing:-1px}.bigbat span{color:var(--mut);font-size:14px}
-.kv{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.kv div{background:var(--bg);border-radius:14px;padding:12px}.kv b{display:block;font-size:18px}.kv span{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.6px}
-.mi{padding:14px 0;border-top:1px solid var(--line)}.mi:first-of-type{border-top:0}
-.mi .top{display:flex;justify-content:space-between;align-items:center;gap:10px}.mi .n{font-weight:600;font-size:14px}.mi .d{font-size:12px;color:var(--mut);margin-top:3px}
+.btn{width:100%;margin-top:14px;border:0;border-radius:16px;padding:15px;font:inherit;font-weight:700;font-size:15px;color:#fff;background:linear-gradient(135deg,var(--ac2),var(--ac));box-shadow:0 6px 20px rgba(255,106,26,.3)}
+.btn.sec{background:var(--card2);border:1px solid var(--line);box-shadow:none}
+.btn.stop{background:linear-gradient(135deg,#f87171,#dc2626);box-shadow:0 6px 20px rgba(220,38,38,.3)}
+.btn2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.btn2 .btn{margin-top:10px}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.kv div{background:var(--bg);border-radius:14px;padding:12px}.kv b{display:block;font-size:20px}
+.kv span{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.6px}
+.mi{padding:14px 0;border-top:1px solid var(--line)}.mi:first-child{border-top:0}
+.mi .n{font-weight:600;font-size:14px}.mi .d{font-size:12px;color:var(--mut);margin-top:3px}
 .mi .bar{height:5px;background:var(--line);border-radius:9px;margin-top:9px;overflow:hidden}.mi .bar i{display:block;height:100%;border-radius:9px;background:var(--ok)}
-.mi.warn .bar i{background:#f5b301}.mi.bad .bar i{background:var(--bad)}.mi.bad .d{color:#ff8b8b}
-.done{border:1px solid var(--line);background:var(--card2);color:var(--tx);border-radius:999px;padding:7px 12px;font:inherit;font-size:12px;font-weight:600;white-space:nowrap}
-.odo-in{width:90px;background:var(--bg);border:1px solid var(--line);color:var(--tx);border-radius:10px;padding:8px;font:inherit;font-size:14px;text-align:right}
-#toast{position:fixed;left:16px;right:16px;bottom:max(20px,env(safe-area-inset-bottom));max-width:448px;margin:auto;background:#242833;border:1px solid var(--line);border-radius:16px;padding:14px 16px;font-size:13px;line-height:1.4;opacity:0;transform:translateY(12px);transition:.25s;pointer-events:none;z-index:9}
+.mi.warn .bar i{background:var(--warn)}.mi.bad .bar i{background:var(--bad)}.mi.bad .d.st{color:#ff8b8b}
+.small{border:1px solid var(--line);background:var(--card2);color:var(--tx);border-radius:999px;padding:7px 12px;font:inherit;font-size:12px;font-weight:600;white-space:nowrap}
+.inp{width:96px;background:var(--bg);border:1px solid var(--line);color:var(--tx);border-radius:10px;padding:8px;font:inherit;font-size:14px;text-align:right}
+.chk{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line);font-size:14px}
+.chk:first-child{border-top:0}
+.chk input{width:22px;height:22px;accent-color:var(--ac)}
+.chart{display:flex;align-items:flex-end;gap:8px;height:120px;margin-top:14px}
+.chart div{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+.chart i{display:block;width:100%;border-radius:8px 8px 4px 4px;background:linear-gradient(180deg,var(--ac2),var(--ac));min-height:3px}
+.chart span{font-size:10px;color:var(--mut)}
+.trip{display:flex;justify-content:space-between;padding:12px 0;border-top:1px solid var(--line);font-size:13px}
+.trip:first-child{border-top:0}.trip b{font-size:15px}.trip .m{color:var(--mut);font-size:12px;margin-top:2px}
+.alert{background:#3b0d0d;border:1px solid #7f1d1d;color:#fecaca;border-radius:16px;padding:12px 14px;margin-top:12px;font-weight:700;text-align:center;display:none}
+.alert.show{display:block;animation:bl .6s infinite}
+nav{position:fixed;left:0;right:0;bottom:0;background:rgba(11,12,16,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:8px 8px max(10px,env(safe-area-inset-bottom));display:flex;justify-content:center;z-index:5}
+nav div{display:grid;grid-template-columns:repeat(4,1fr);width:100%;max-width:480px}
+nav button{background:none;border:0;color:var(--mut);font:inherit;font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0}
+nav svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+nav button.on{color:var(--ac2)}
+.page{display:none}.page.on{display:block}
+#toast{position:fixed;left:16px;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));max-width:448px;margin:auto;background:#242833;border:1px solid var(--line);border-radius:16px;padding:14px 16px;font-size:13px;line-height:1.4;opacity:0;transform:translateY(12px);transition:.25s;pointer-events:none;z-index:9}
 #toast.show{opacity:1;transform:none}
-.foot{text-align:center;color:var(--mut);font-size:11px;margin-top:18px}
 </style>
 </head>
 <body>
@@ -77,166 +97,285 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border:0;border-radiu
   <button class="pill" id="connect">Connect</button>
 </header>
 
-<section class="hero">
-  <svg class="gauge" viewBox="0 0 300 230">
-    <defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ff9a4d"/><stop offset="1" stop-color="#ff4d00"/></linearGradient></defs>
-    <path d="M45 195 A115 115 0 1 1 255 195" fill="none" stroke="#262a34" stroke-width="16" stroke-linecap="round"/>
-    <path id="arc" d="M45 195 A115 115 0 1 1 255 195" fill="none" stroke="url(#gg)" stroke-width="16" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100" style="transition:stroke-dasharray .5s"/>
-    <path id="limit" d="" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
-  </svg>
-  <div class="speed"><b id="spd">0</b><span>km/h</span></div>
-  <div class="bat"><i id="batbar"></i></div>
-  <div class="stats">
-    <div class="stat"><b id="batt">80%</b><span>Battery</span></div>
-    <div class="stat"><b id="range">28 km</b><span>Range</span></div>
-    <div class="stat"><b id="odo">142 km</b><span>Total</span></div>
+<!-- HOME -->
+<section class="page on" id="p-home">
+  <div class="hero">
+    <svg class="gauge" viewBox="0 0 300 230">
+      <defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ff9a4d"/><stop offset="1" stop-color="#ff4d00"/></linearGradient></defs>
+      <path d="M45 195 A115 115 0 1 1 255 195" fill="none" stroke="#262a34" stroke-width="16" stroke-linecap="round"/>
+      <path id="arc" d="M45 195 A115 115 0 1 1 255 195" fill="none" stroke="url(#gg)" stroke-width="16" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100" style="transition:stroke-dasharray .5s"/>
+      <path id="limit" d="" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+    <div class="speed"><b id="spd">0</b><span id="spdSrc">km/h</span></div>
+    <div class="bat"><i id="batbar"></i></div>
+    <div class="stats">
+      <div class="stat"><b id="batt">80%</b><span>Battery</span></div>
+      <div class="stat"><b id="range">28 km</b><span>Range</span></div>
+      <div class="stat"><b id="odo">142 km</b><span>Total</span></div>
+    </div>
+  </div>
+  <div class="grid">
+    <button class="tile" id="lock"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><div><div class="t">Lock</div><div class="s" id="lockS">Unlocked</div></div></button>
+    <button class="tile" id="light"><svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg><div><div class="t">Headlight</div><div class="s" id="lightS">Off</div></div></button>
+  </div>
+  <div class="card">
+    <div class="lbl">Riding mode</div>
+    <div class="modes" id="modes"><button data-m="eco">Eco</button><button data-m="drive" class="on">Drive</button><button data-m="sport">Sport</button></div>
+  </div>
+  <div class="card">
+    <div class="row"><span class="lbl">Max speed</span><span class="big"><span id="maxv">25</span><small>km/h</small></span></div>
+    <input type="range" id="max" min="0" max="35" step="1" value="25">
+    <div class="ticks"><span>0</span><span>10</span><span>20</span><span>30</span><span>35</span></div>
+    <button class="btn" id="apply">Apply speed limit</button>
+    <div class="note">Screen only: this doesn't change the scooter's own limit. Use only where legal.</div>
+  </div>
+  <div class="card">
+    <div class="row"><span class="lbl">Battery</span><span class="big"><span id="b2">80</span><small>%</small></span></div>
+    <input type="range" id="battIn" min="0" max="100" step="1" value="80">
+    <div class="note">Set this to what your scooter's display shows. The app uses it for range and time left.</div>
+    <div class="kv">
+      <div><b id="r2">~36 km</b><span>Range left</span></div>
+      <div><b id="t2">1 h 56 min</b><span>Ride time left</span></div>
+    </div>
   </div>
 </section>
 
-<div class="grid">
-  <button class="tile" id="lock">
-    <svg viewBox="0 0 24 24" id="lockIcon"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
-    <div><div class="t">Lock</div><div class="s" id="lockS">Unlocked</div></div>
-  </button>
-  <button class="tile" id="light">
-    <svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg>
-    <div><div class="t">Headlight</div><div class="s" id="lightS">Off</div></div>
-  </button>
-</div>
-
-<div class="card">
-  <div class="lbl">Riding mode</div>
-  <div class="modes" id="modes">
-    <button data-m="eco">Eco</button><button data-m="drive" class="on">Drive</button><button data-m="sport">Sport</button>
+<!-- RIDE -->
+<section class="page" id="p-ride">
+  <h2>GPS Ride</h2>
+  <div class="hero" style="padding:26px 12px">
+    <div style="font-size:84px;font-weight:800;letter-spacing:-3px;line-height:1" id="gSpd">0</div>
+    <div class="lbl" style="margin-top:6px">km/h · real GPS speed</div>
+    <div class="stats" style="margin-top:16px">
+      <div class="stat"><b id="gDist">0.00</b><span>km</span></div>
+      <div class="stat"><b id="gTime">0:00</b><span>Time</span></div>
+      <div class="stat"><b id="gTop">0</b><span>Top km/h</span></div>
+    </div>
   </div>
-</div>
-
-<div class="card">
-  <div class="row"><span class="lbl">Max speed</span><span class="big"><span id="maxv">25</span><small>km/h</small></span></div>
-  <input type="range" id="max" min="0" max="35" step="1" value="25">
-  <div class="ticks"><span>0</span><span>10</span><span>20</span><span>30</span><span>35</span></div>
-  <button class="apply" id="apply">Apply speed limit</button>
-  <div class="note">Use only where legal. Local laws often cap e-scooters at 20–25 km/h.</div>
-</div>
-
-<div class="card">
-  <div class="lbl">Battery</div>
-  <div class="bigbat"><b id="b2">80%</b><span id="b2s"></span></div>
-  <div class="kv">
-    <div><b id="r2">28 km</b><span>Range left (approx)</span></div>
-    <div><b id="t2">1 h 10 min</b><span>Ride time left</span></div>
+  <div class="alert" id="alert">SLOW DOWN</div>
+  <button class="btn" id="rideBtn">Start ride</button>
+  <div class="card">
+    <div class="row"><span class="lbl">Speed alert</span><label class="row" style="gap:8px;font-size:14px"><input type="checkbox" id="alertOn" style="width:20px;height:20px;accent-color:var(--ac)"> On</label></div>
+    <div class="row" style="margin-top:6px"><span class="big"><span id="alertV">25</span><small>km/h</small></span></div>
+    <input type="range" id="alertIn" min="5" max="45" step="1" value="25">
+    <div class="note">Your phone vibrates and the screen flashes when you go over this speed. Handy near police, school zones or bike paths.</div>
   </div>
-  <div class="note">Range is an estimate (max ~55 km on a full charge in Eco, less in Sport, with a heavy rider, hills or cold weather). Your scooter's real value will differ.</div>
-</div>
+  <div class="card">
+    <div class="lbl">Where did I park?</div>
+    <div class="note" id="parkInfo">No parking spot saved yet.</div>
+    <div class="btn2"><button class="btn sec" id="parkSave">Save spot</button><button class="btn" id="parkGo">Navigate</button></div>
+  </div>
+  <div class="note">Keep this screen open while riding. GPS needs Chrome and location permission. It won't work inside the claude.ai preview.</div>
+</section>
 
-<div class="card">
-  <div class="row"><span class="lbl">Maintenance</span><span class="lbl" style="display:flex;align-items:center;gap:8px">Odometer <input class="odo-in" id="odoIn" type="number" min="0" inputmode="numeric"> km</span></div>
-  <div id="maint" style="margin-top:8px"></div>
-  <div class="note">Nobody can predict exactly when a scooter will break. These are the usual service intervals, counted from your odometer, so you catch wear before it causes a failure. Check your manual for exact figures.</div>
-</div>
+<!-- STATS -->
+<section class="page" id="p-stats">
+  <h2>Your rides</h2>
+  <div class="kv" style="margin-top:0">
+    <div><b id="sWeek">0 km</b><span>This week</span></div>
+    <div><b id="sMonth">0 km</b><span>This month</span></div>
+    <div><b id="sTrips">0</b><span>Rides</span></div>
+    <div><b id="sTop">0</b><span>Top speed km/h</span></div>
+  </div>
+  <div class="card">
+    <div class="lbl">Last 7 days</div>
+    <div class="chart" id="chart"></div>
+  </div>
+  <div class="card">
+    <div class="lbl">Saved vs. driving</div>
+    <div class="kv">
+      <div><b id="sMoney">0</b><span>Money saved</span></div>
+      <div><b id="sCo2">0 kg</b><span>CO₂ saved</span></div>
+    </div>
+    <div class="row" style="margin-top:12px"><span class="note" style="margin:0">Car cost per km</span><input class="inp" id="costIn" type="number" step="0.1" min="0" inputmode="decimal"></div>
+  </div>
+  <div class="card">
+    <div class="row"><span class="lbl">Ride history</span><button class="small" id="addTrip">+ Add manually</button></div>
+    <div id="trips" style="margin-top:6px"></div>
+  </div>
+</section>
 
-<div class="foot" id="foot">Demo mode: nothing is sent to a real scooter.</div>
+<!-- SERVICE -->
+<section class="page" id="p-service">
+  <h2>Service</h2>
+  <div class="card" style="margin-top:0">
+    <div class="lbl">Before every ride</div>
+    <div id="check" style="margin-top:6px"></div>
+    <button class="btn sec" id="checkReset" style="margin-top:10px">Reset checklist</button>
+  </div>
+  <div class="card">
+    <div class="row"><span class="lbl">Maintenance</span><span class="row" style="gap:6px;font-size:12px;color:var(--mut)">Odometer <input class="inp" id="odoIn" type="number" min="0" inputmode="numeric"> km</span></div>
+    <div id="maint" style="margin-top:8px"></div>
+    <div class="note">Nobody can predict exactly when a scooter will break. These usual service intervals help you catch wear early. GPS rides add to the odometer automatically.</div>
+  </div>
+  <div class="card">
+    <div class="row"><span class="lbl">Charging</span><button class="small" id="charged">I charged it</button></div>
+    <div class="kv">
+      <div><b id="cCount">0</b><span>Charges logged</span></div>
+      <div><b id="cLast">–</b><span>Last charge</span></div>
+    </div>
+    <div class="note">Battery tip: charge after rides, don't leave it at 0%, and store it at 40–60% if you won't ride for weeks.</div>
+  </div>
+</section>
+
+<nav><div>
+  <button class="on" data-p="home"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>Home</button>
+  <button data-p="ride"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 12l4-4"/><path d="M12 7v1M7 12h1M16 12h1"/></svg>Ride</button>
+  <button data-p="stats"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Stats</button>
+  <button data-p="service"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg>Service</button>
+</div></nav>
 <div id="toast"></div>
 
 <script>
 const $=id=>document.getElementById(id);
-const S={locked:false,light:false,mode:'drive',max:25,applied:25,speed:0,batt:80,connected:false};
-const MODE_CAP={eco:15,drive:25,sport:35};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const S={locked:false,light:false,mode:'drive',max:25,applied:25,speed:0,connected:false};
+const D=Object.assign({batt:80,odo:142,done:{tyre:80,bolts:0,brake:0,clean:0,bat:0,pro:0},trips:[],cost:0.5,alert:25,alertOn:false,park:null,charges:[],check:{}},store.get('scooterData',{}));
+const old=store.get('scooterM',null);if(old&&!store.get('scooterData',null)){D.odo=old.odo??D.odo;Object.assign(D.done,old.done||{})}
+const save=()=>store.set('scooterData',D);
 let ble=null,toastT;
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),3600)}
 
-function render(){
+// ---------- tabs ----------
+document.querySelector('nav').onclick=e=>{const b=e.target.closest('button');if(!b)return;
+  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));
+  document.querySelectorAll('.page').forEach(p=>p.classList.toggle('on',p.id==='p-'+b.dataset.p));
+  window.scrollTo(0,0);renderAll()};
+
+// ---------- home ----------
+const FULL_RANGE={eco:55,drive:45,sport:35};
+const fmtT=min=>{const h=Math.floor(min/60),m=Math.round(min%60);return h?h+' h '+m+' min':m+' min'};
+function renderHome(){
+  const live=R.on?R.speed:S.speed;
   $('lock').classList.toggle('on',S.locked);$('lockS').textContent=S.locked?'Locked':'Unlocked';
   $('light').classList.toggle('on',S.light);$('lightS').textContent=S.light?'On':'Off';
   document.querySelectorAll('#modes button').forEach(b=>b.classList.toggle('on',b.dataset.m===S.mode));
   $('maxv').textContent=S.max;$('max').value=S.max;$('max').style.setProperty('--p',S.max/35*100+'%');
-  $('spd').textContent=Math.round(S.speed);
-  $('arc').style.opacity=S.speed<.5?0:1;$('arc').setAttribute('stroke-dasharray',(S.speed/35*100).toFixed(1)+' 100');
-  $('batt').textContent=S.batt+'%';$('batbar').style.width=S.batt+'%';$('range').textContent=Math.round(S.batt*.35)+' km';
-  // limit marker on the arc
-  const a=(135+270*S.applied/35)*Math.PI/180,cx=150,cy=145,r1=104,r2=126;
-  $('limit').setAttribute('d',`M${cx+r1*Math.cos(a)} ${cy+r1*Math.sin(a)} L${cx+r2*Math.cos(a)} ${cy+r2*Math.sin(a)}`);
-  $('dot').classList.toggle('on',S.connected);
-  $('status').textContent=S.connected?'Bluetooth connected':'Demo mode';
+  $('spd').textContent=Math.round(live);$('spdSrc').textContent=R.on?'km/h · GPS':'km/h';
+  $('arc').style.opacity=live<.5?0:1;$('arc').setAttribute('stroke-dasharray',(Math.min(live,35)/35*100).toFixed(1)+' 100');
+  const a=(135+270*S.applied/35)*Math.PI/180,cx=150,cy=145;
+  $('limit').setAttribute('d',`M${cx+104*Math.cos(a)} ${cy+104*Math.sin(a)} L${cx+126*Math.cos(a)} ${cy+126*Math.sin(a)}`);
+  const r=D.batt/100*FULL_RANGE[S.mode];
+  $('batt').textContent=D.batt+'%';$('batbar').style.width=D.batt+'%';$('range').textContent='~'+Math.round(r)+' km';$('odo').textContent=Math.round(D.odo)+' km';
+  $('b2').textContent=D.batt;$('battIn').value=D.batt;$('battIn').style.setProperty('--p',D.batt+'%');
+  $('r2').textContent='~'+Math.round(r)+' km';
+  $('t2').textContent=fmtT(r/(Math.max(10,Math.min(S.applied,{eco:15,drive:22,sport:30}[S.mode])*.85))*60);
+  $('dot').className='dot'+(R.on?' rec':S.connected?' on':'');
+  $('status').textContent=R.on?'Recording ride':S.connected?'Bluetooth connected':'Demo mode';
   $('connect').textContent=S.connected?'Disconnect':'Connect';
-  $('foot').textContent=S.connected?'Connected over Bluetooth.':'Demo mode: nothing is sent to a real scooter.';
 }
-
-// Command layer: demo mode updates local state; BLE mode tries the scooter.
-async function send(cmd,val){
-  if(S.connected){
-    try{ await bleCommand(cmd,val) }
-    catch(e){ toast(e.message); return false }
-  }
-  return true;
-}
-async function bleCommand(){
-  // Scooter 4 uses Xiaomi's encrypted pairing (Mi account key). Without that
-  // key the scooter ignores commands, so we refuse rather than pretend.
-  throw new Error('Connected, but this scooter needs Xiaomi’s encrypted pairing key before it accepts commands. Not supported yet.');
-}
-
-$('lock').onclick=async()=>{const v=!S.locked;if(await send('lock',v)){S.locked=v;if(v)S.speed=0;render()}};
-$('light').onclick=async()=>{const v=!S.light;if(await send('light',v)){S.light=v;render()}};
-$('modes').onclick=async e=>{const m=e.target.dataset.m;if(!m)return;if(await send('mode',m)){S.mode=m;render()}};
+async function send(){if(S.connected){toast('Connected, but this scooter needs Xiaomi’s encrypted pairing before it accepts commands. Not supported yet.');return false}return true}
+$('lock').onclick=async()=>{if(await send()){S.locked=!S.locked;if(S.locked)S.speed=0;renderHome()}};
+$('light').onclick=async()=>{if(await send()){S.light=!S.light;renderHome()}};
+$('modes').onclick=async e=>{const m=e.target.dataset.m;if(m&&await send()){S.mode=m;renderHome()}};
 $('max').oninput=e=>{S.max=+e.target.value;$('maxv').textContent=S.max;$('max').style.setProperty('--p',S.max/35*100+'%')};
-$('apply').onclick=async()=>{if(await send('maxspeed',S.max)){S.applied=S.max;render();toast('Max speed set to '+S.max+' km/h')}};
-
+$('apply').onclick=async()=>{if(await send()){S.applied=S.max;renderHome();toast('Max speed set to '+S.max+' km/h on screen')}};
+$('battIn').oninput=e=>{D.batt=+e.target.value;save();renderHome()};
 $('connect').onclick=async()=>{
-  if(S.connected){try{ble&&ble.gatt.disconnect()}catch(e){}S.connected=false;ble=null;render();return}
+  if(S.connected){try{ble&&ble.gatt.disconnect()}catch(e){}S.connected=false;ble=null;renderHome();return}
   if(!navigator.bluetooth){toast('Bluetooth isn’t available in this browser. Open in Chrome on Android.');return}
-  try{
-    ble=await navigator.bluetooth.requestDevice({acceptAllDevices:true,optionalServices:[0xfe95,'6e400001-b5a3-f393-e0a9-e50e24dcca9e']});
-    await ble.gatt.connect();
-    ble.addEventListener('gattserverdisconnected',()=>{S.connected=false;render()});
-    S.connected=true;render();
-    toast('Connected to '+(ble.name||'device')+'. Commands need Xiaomi pairing, which isn’t supported yet.');
-  }catch(e){if(e.name==='NotFoundError')return;if(e.name==='SecurityError'||/permissions policy/i.test(e.message))toast('Bluetooth is blocked on this page. Open the app from its GitHub Pages link in Chrome to connect.');else toast('Could not connect: '+e.message)}
+  try{ble=await navigator.bluetooth.requestDevice({acceptAllDevices:true,optionalServices:[0xfe95,'6e400001-b5a3-f393-e0a9-e50e24dcca9e']});
+    await ble.gatt.connect();ble.addEventListener('gattserverdisconnected',()=>{S.connected=false;renderHome()});
+    S.connected=true;renderHome();toast('Connected to '+(ble.name||'device')+'. Commands need Xiaomi pairing, which isn’t supported yet.');
+  }catch(e){if(e.name==='NotFoundError')return;if(e.name==='SecurityError'||/permissions policy/i.test(e.message))toast('Bluetooth is blocked on this page. Open the app from its GitHub Pages link in Chrome.');else toast('Could not connect: '+e.message)}
 };
 
-// Demo ride simulation
-setInterval(()=>{
-  if(S.connected)return;
-  const target=S.locked?0:(S.speed<S.applied-1?S.applied*0.8:S.applied*0.75);
-  if(S.demoRide){S.speed+=(Math.min(target,S.applied)-S.speed)*.2}else{S.speed*=.8}
-  render();
-},500);
-$('arc').parentElement.parentElement.onclick=()=>{S.demoRide=!S.demoRide;toast(S.demoRide?'Demo ride on':'Demo ride off')};
-
-// ---- Battery estimate + maintenance ----
-const FULL_RANGE={eco:55,drive:45,sport:35};
-const ITEMS=[
- {id:'tyre',n:'Tyre pressure & tread',km:100,d:'Check pressure (about 50\u201355 psi / 3.5\u20134 bar) and tread wear'},
- {id:'bolts',n:'Tighten bolts & folding latch',km:200,d:'Handlebar, stem and folding mechanism'},
- {id:'brake',n:'Brakes & brake pads',km:300,d:'Pads wear out; check lever feel and stopping distance'},
- {id:'clean',n:'Clean & lubricate',km:500,d:'Wipe down, lube folding hinge and cables, avoid water on ports'},
- {id:'bat',n:'Battery health check',km:1000,d:'Capacity drop, swelling, charge port; keep it between 20\u201380% when stored'},
- {id:'pro',n:'Full service at a shop',km:2000,d:'Bearings, motor, controller, wiring inspection'}
-];
-let M={odo:142,done:{tyre:80,bolts:0,brake:0,clean:0,bat:0,pro:0}};
-try{Object.assign(M,JSON.parse(localStorage.getItem('scooterM')||'{}'))}catch(e){}
-function saveM(){try{localStorage.setItem('scooterM',JSON.stringify(M))}catch(e){}}
-function fmtT(min){const h=Math.floor(min/60),m=Math.round(min%60);return h?h+' h '+m+' min':m+' min'}
-function renderExtra(){
-  const full=FULL_RANGE[S.mode],r=S.batt/100*full;
-  $('b2').textContent=S.batt+'%';
-  $('b2s').textContent=S.batt<=15?'Low \u2013 charge soon':S.batt<=40?'Okay':'Good';
-  $('r2').textContent='~'+Math.round(r)+' km';
-  const v=Math.max(10,Math.min(S.applied,S.mode==='eco'?15:S.mode==='drive'?22:30)*0.85);
-  $('t2').textContent=fmtT(r/v*60);
-  $('range').textContent='~'+Math.round(r)+' km';
-  $('odo').textContent=M.odo+' km';
-  if(document.activeElement!==$('odoIn'))$('odoIn').value=M.odo;
-  $('maint').innerHTML=ITEMS.map(it=>{
-    const last=M.done[it.id]??0,used=M.odo-last,left=it.km-used,pct=Math.min(100,used/it.km*100);
-    const cls=left<=0?'bad':left<=it.km*0.2?'warn':'';
-    const txt=left<=0?'Overdue by '+(-left)+' km':left+' km until due';
-    return `<div class="mi ${cls}"><div class="top"><div><div class="n">${it.n}</div><div class="d">${txt} \u00b7 every ${it.km} km</div></div><button class="done" data-id="${it.id}">Done</button></div><div class="bar"><i style="width:${pct}%"></i></div><div class="d">${it.d}</div></div>`}).join('');
+// ---------- GPS ride ----------
+const R={on:false,watch:null,start:0,dist:0,top:0,speed:0,last:null,lock:null,alerting:false};
+const hav=(a,b)=>{const t=x=>x*Math.PI/180,R0=6371,dLa=t(b.lat-a.lat),dLo=t(b.lon-a.lon);const h=Math.sin(dLa/2)**2+Math.cos(t(a.lat))*Math.cos(t(b.lat))*Math.sin(dLo/2)**2;return 2*R0*Math.asin(Math.sqrt(h))};
+const mmss=s=>{s=Math.floor(s);const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return(h?h+':'+String(m).padStart(2,'0'):m)+':'+String(x).padStart(2,'0')};
+function onPos(p){
+  const c=p.coords,pt={lat:c.latitude,lon:c.longitude,t:p.timestamp};
+  if(c.accuracy>35)return;
+  let v=c.speed!=null&&!isNaN(c.speed)?c.speed*3.6:null;
+  if(R.last){const d=hav(R.last,pt),dt=(pt.t-R.last.t)/3600000;
+    if(dt>0){const calc=d/dt;if(v==null)v=calc;if(calc<80&&d>0.002)R.dist+=d}}
+  R.last=pt;R.speed=Math.max(0,v||0);if(R.speed<1.5)R.speed=0;R.top=Math.max(R.top,R.speed);
+  checkAlert();renderRide();renderHome();
 }
-$('odoIn').onchange=e=>{M.odo=Math.max(0,+e.target.value||0);saveM();renderExtra()};
-$('maint').onclick=e=>{const id=e.target.dataset.id;if(!id)return;M.done[id]=M.odo;saveM();renderExtra();toast('Marked as done at '+M.odo+' km')};
-const _render=render;render=function(){_render();renderExtra()};
-render();
+function checkAlert(){
+  const over=D.alertOn&&R.speed>D.alert;
+  $('alert').classList.toggle('show',over);$('alert').textContent='SLOW DOWN – over '+D.alert+' km/h';
+  if(over&&!R.alerting&&navigator.vibrate)navigator.vibrate([300,150,300]);R.alerting=over;
+}
+function renderRide(){
+  $('gSpd').textContent=Math.round(R.speed);$('gDist').textContent=R.dist.toFixed(2);$('gTop').textContent=Math.round(R.top);
+  $('gTime').textContent=R.on?mmss((Date.now()-R.start)/1000):'0:00';
+  $('rideBtn').textContent=R.on?'Stop & save ride':'Start ride';$('rideBtn').classList.toggle('stop',R.on);
+  $('alertV').textContent=D.alert;$('alertIn').value=D.alert;$('alertIn').style.setProperty('--p',(D.alert-5)/40*100+'%');$('alertOn').checked=D.alertOn;
+  $('parkInfo').textContent=D.park?'Saved '+new Date(D.park.t).toLocaleString([], {weekday:'short',hour:'2-digit',minute:'2-digit'})+' (±'+Math.round(D.park.acc)+' m)':'No parking spot saved yet.';
+}
+setInterval(()=>{if(R.on)$('gTime').textContent=mmss((Date.now()-R.start)/1000)},1000);
+$('rideBtn').onclick=async()=>{
+  if(!R.on){
+    if(!navigator.geolocation){toast('GPS isn’t available in this browser.');return}
+    Object.assign(R,{on:true,start:Date.now(),dist:0,top:0,speed:0,last:null});
+    R.watch=navigator.geolocation.watchPosition(onPos,e=>{if(e.code===1){toast('Location blocked. Allow location for this page (it doesn’t work inside the claude.ai preview).');stopRide(false)}else toast('Waiting for GPS signal…')},{enableHighAccuracy:true,maximumAge:0});
+    try{R.lock=await navigator.wakeLock.request('screen')}catch(e){}
+    renderRide();renderHome();toast('Ride started. Keep the screen on.');
+  }else stopRide(true);
+};
+function stopRide(keep){
+  if(R.watch!=null)navigator.geolocation.clearWatch(R.watch);R.watch=null;
+  try{R.lock&&R.lock.release()}catch(e){}R.lock=null;
+  const secs=(Date.now()-R.start)/1000;
+  if(keep&&R.dist>=0.05){D.trips.unshift({t:R.start,km:+R.dist.toFixed(2),s:Math.round(secs),top:Math.round(R.top)});D.odo+=R.dist;save();toast('Saved: '+R.dist.toFixed(2)+' km in '+mmss(secs))}
+  else if(keep)toast('Ride too short to save.');
+  R.on=false;R.speed=0;$('alert').classList.remove('show');renderAll();
+}
+$('alertIn').oninput=e=>{D.alert=+e.target.value;save();renderRide()};
+$('alertOn').onchange=e=>{D.alertOn=e.target.checked;save();if(D.alertOn&&navigator.vibrate)navigator.vibrate(80)};
+$('parkSave').onclick=()=>{if(!navigator.geolocation){toast('GPS isn’t available here.');return}
+  toast('Getting your location…');
+  navigator.geolocation.getCurrentPosition(p=>{D.park={lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy,t:Date.now()};save();renderRide();toast('Parking spot saved')},
+  e=>toast(e.code===1?'Location blocked for this page.':'Could not get location: '+e.message),{enableHighAccuracy:true,timeout:20000})};
+$('parkGo').onclick=()=>{if(!D.park){toast('Save a parking spot first.');return}window.open(`https://www.google.com/maps/dir/?api=1&destination=${D.park.lat},${D.park.lon}&travelmode=walking`,'_blank')};
+
+// ---------- stats ----------
+function renderStats(){
+  const now=new Date(),day=864e5,sod=new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime();
+  const wk=D.trips.filter(t=>t.t>=sod-6*day).reduce((a,t)=>a+t.km,0);
+  const mo=D.trips.filter(t=>{const d=new Date(t.t);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()}).reduce((a,t)=>a+t.km,0);
+  const all=D.trips.reduce((a,t)=>a+t.km,0);
+  $('sWeek').textContent=wk.toFixed(1)+' km';$('sMonth').textContent=mo.toFixed(1)+' km';$('sTrips').textContent=D.trips.length;
+  $('sTop').textContent=D.trips.reduce((a,t)=>Math.max(a,t.top||0),0);
+  $('sMoney').textContent=(all*D.cost).toFixed(0);$('sCo2').textContent=(all*0.17).toFixed(1)+' kg';
+  if(document.activeElement!==$('costIn'))$('costIn').value=D.cost;
+  const days=[...Array(7)].map((_,i)=>{const s=sod-(6-i)*day;return{l:new Date(s).toLocaleDateString([], {weekday:'narrow'}),km:D.trips.filter(t=>t.t>=s&&t.t<s+day).reduce((a,t)=>a+t.km,0)}});
+  const mx=Math.max(1,...days.map(d=>d.km));
+  $('chart').innerHTML=days.map(d=>`<div><span>${d.km?d.km.toFixed(1):''}</span><i style="height:${d.km/mx*80}%"></i><span>${d.l}</span></div>`).join('');
+  $('trips').innerHTML=D.trips.length?D.trips.slice(0,30).map((t,i)=>`<div class="trip"><div><b>${t.km.toFixed(2)} km</b><div class="m">${new Date(t.t).toLocaleString([], {weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div></div><div style="text-align:right"><div>${t.s?mmss(t.s):'–'}</div><div class="m">${t.top?'top '+t.top+' km/h':'manual'} <button class="small" data-del="${i}" style="padding:3px 8px;margin-left:4px">×</button></div></div></div>`).join(''):'<div class="note">No rides yet. Start one on the Ride tab, or add one by hand.</div>';
+}
+$('costIn').onchange=e=>{D.cost=Math.max(0,+e.target.value||0);save();renderStats()};
+$('addTrip').onclick=()=>{const v=parseFloat(prompt('How many km did you ride?')||'');if(!(v>0))return;D.trips.unshift({t:Date.now(),km:v,s:0,top:0});D.odo+=v;save();renderAll();toast('Added '+v+' km')};
+$('trips').onclick=e=>{const i=e.target.dataset.del;if(i==null)return;if(!confirm('Delete this ride?'))return;D.trips.splice(+i,1);save();renderStats()};
+
+// ---------- service ----------
+const ITEMS=[
+ {id:'tyre',n:'Tyre pressure & tread',km:100,d:'Check pressure (about 50–55 psi / 3.5–4 bar) and tread wear'},
+ {id:'bolts',n:'Tighten bolts & folding latch',km:200,d:'Handlebar, stem and folding mechanism'},
+ {id:'brake',n:'Brakes & brake pads',km:300,d:'Check lever feel and stopping distance'},
+ {id:'clean',n:'Clean & lubricate',km:500,d:'Lube the folding hinge and cables, keep water off the ports'},
+ {id:'bat',n:'Battery health check',km:1000,d:'Range drop, swelling, charge port condition'},
+ {id:'pro',n:'Full service at a shop',km:2000,d:'Bearings, motor, controller, wiring'}];
+const CHECK=['Tyres look firm','Both brakes work','Folding latch locked','Lights work','Battery enough for the trip','Helmet on'];
+function renderService(){
+  if(document.activeElement!==$('odoIn'))$('odoIn').value=Math.round(D.odo);
+  $('maint').innerHTML=ITEMS.map(it=>{const used=D.odo-(D.done[it.id]??0),left=Math.round(it.km-used),pct=Math.min(100,Math.max(0,used/it.km*100));
+    const cls=left<=0?'bad':left<=it.km*.2?'warn':'';
+    return `<div class="mi ${cls}"><div class="row"><div><div class="n">${it.n}</div><div class="d st">${left<=0?'Overdue by '+(-left)+' km':left+' km until due'} · every ${it.km} km</div></div><button class="small" data-id="${it.id}">Done</button></div><div class="bar"><i style="width:${pct}%"></i></div><div class="d">${it.d}</div></div>`}).join('');
+  $('check').innerHTML=CHECK.map((c,i)=>`<label class="chk"><input type="checkbox" data-c="${i}" ${D.check[i]?'checked':''}>${c}</label>`).join('');
+  $('cCount').textContent=D.charges.length;
+  $('cLast').textContent=D.charges.length?new Date(D.charges[0]).toLocaleDateString([], {day:'numeric',month:'short'}):'–';
+}
+$('odoIn').onchange=e=>{D.odo=Math.max(0,+e.target.value||0);save();renderAll()};
+$('maint').onclick=e=>{const id=e.target.dataset.id;if(!id)return;D.done[id]=D.odo;save();renderService();toast('Marked done at '+Math.round(D.odo)+' km')};
+$('check').onchange=e=>{const i=e.target.dataset.c;if(i==null)return;D.check[i]=e.target.checked;save();if(CHECK.every((_,k)=>D.check[k]))toast('All checks done. Ride safe!')};
+$('checkReset').onclick=()=>{D.check={};save();renderService()};
+$('charged').onclick=()=>{D.charges.unshift(Date.now());D.batt=100;save();renderAll();toast('Charge logged, battery set to 100%')};
+
+function renderAll(){renderHome();renderRide();renderStats();renderService()}
+renderAll();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>
