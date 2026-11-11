@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Scooter Home</title>
+<meta name="theme-color" content="#0b0c10">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<style>
+:root{--bg:#0b0c10;--card:#15171d;--card2:#1c1f27;--line:#262a34;--tx:#f4f5f7;--mut:#8b91a0;--ac:#ff6a1a;--ac2:#ff9a4d;--ok:#34d399;--bad:#ef4444}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{min-height:100vh;padding:max(16px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom));max-width:480px;margin:0 auto;background:radial-gradient(120% 60% at 50% -10%,#2a1608 0%,transparent 60%),var(--bg)}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+h1{font-size:20px;margin:0;font-weight:700;letter-spacing:.2px}
+.sub{font-size:12px;color:var(--mut);margin-top:2px;display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--mut)}
+.dot.on{background:var(--ok);box-shadow:0 0 8px var(--ok)}
+.pill{border:1px solid var(--line);background:var(--card);color:var(--tx);border-radius:999px;padding:9px 16px;font-size:13px;font-weight:600}
+.pill:active{transform:scale(.96)}
+.hero{position:relative;background:linear-gradient(160deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:28px;padding:18px 12px 20px;text-align:center;overflow:hidden}
+.gauge{width:100%;max-width:300px;margin:0 auto;display:block}
+.speed{position:absolute;left:0;right:0;top:92px;pointer-events:none}
+.speed b{font-size:64px;font-weight:800;letter-spacing:-2px;line-height:1}
+.speed span{display:block;color:var(--mut);font-size:13px;margin-top:2px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+.stat{padding:10px 4px}
+.stat b{display:block;font-size:20px;font-weight:700}
+.stat span{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.6px}
+.bat{height:6px;background:var(--line);border-radius:9px;margin:6px 18px 0;overflow:hidden}
+.bat i{display:block;height:100%;width:80%;background:linear-gradient(90deg,var(--ac),var(--ok));border-radius:9px;transition:width .6s}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px;text-align:left;color:var(--tx);font:inherit;transition:.2s;display:flex;flex-direction:column;gap:14px;min-height:112px;justify-content:space-between}
+.tile:active{transform:scale(.97)}
+.tile svg{width:30px;height:30px;stroke:var(--mut);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:.2s}
+.tile .t{font-weight:600;font-size:15px}.tile .s{font-size:12px;color:var(--mut);margin-top:2px}
+.tile.on{background:linear-gradient(150deg,#3a1d0b,#2a1608);border-color:#6b3513}
+.tile.on svg{stroke:var(--ac2)}
+.tile.on .s{color:var(--ac2)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:18px;margin-top:12px}
+.row{display:flex;justify-content:space-between;align-items:baseline}
+.lbl{font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.7px;font-weight:600}
+.big{font-size:30px;font-weight:800}.big small{font-size:14px;color:var(--mut);font-weight:600;margin-left:3px}
+.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;background:var(--bg);padding:5px;border-radius:16px}
+.modes button{border:0;background:transparent;color:var(--mut);padding:12px 0;border-radius:12px;font:inherit;font-weight:700;font-size:14px;transition:.2s}
+.modes button.on{background:linear-gradient(135deg,var(--ac2),var(--ac));color:#fff;box-shadow:0 4px 16px rgba(255,106,26,.35)}
+input[type=range]{-webkit-appearance:none;width:100%;height:44px;background:transparent;margin:6px 0 0}
+input[type=range]::-webkit-slider-runnable-track{height:8px;border-radius:9px;background:linear-gradient(90deg,var(--ac) var(--p,70%),var(--line) var(--p,70%))}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;background:#fff;margin-top:-11px;box-shadow:0 2px 10px rgba(0,0,0,.5)}
+input[type=range]::-moz-range-track{height:8px;border-radius:9px;background:var(--line)}
+input[type=range]::-moz-range-progress{height:8px;border-radius:9px;background:var(--ac)}
+input[type=range]::-moz-range-thumb{width:30px;height:30px;border:0;border-radius:50%;background:#fff}
+.ticks{display:flex;justify-content:space-between;font-size:11px;color:var(--mut)}
+.note{font-size:12px;color:var(--mut);line-height:1.5;margin-top:10px}
+.apply{width:100%;margin-top:14px;border:0;border-radius:16px;padding:15px;font:inherit;font-weight:700;font-size:15px;color:#fff;background:linear-gradient(135deg,var(--ac2),var(--ac));box-shadow:0 6px 20px rgba(255,106,26,.3)}
+.apply:active{transform:scale(.98)}
+#toast{position:fixed;left:16px;right:16px;bottom:max(20px,env(safe-area-inset-bottom));max-width:448px;margin:auto;background:#242833;border:1px solid var(--line);border-radius:16px;padding:14px 16px;font-size:13px;line-height:1.4;opacity:0;transform:translateY(12px);transition:.25s;pointer-events:none;z-index:9}
+#toast.show{opacity:1;transform:none}
+.foot{text-align:center;color:var(--mut);font-size:11px;margin-top:18px}
+</style>
+</head>
+<body>
+<header>
+  <div><h1>Scooter 4</h1><div class="sub"><i class="dot" id="dot"></i><span id="status">Demo mode</span></div></div>
+  <button class="pill" id="connect">Connect</button>
+</header>
+
+<section class="hero">
+  <svg class="gauge" viewBox="0 0 300 230">
+    <defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ff9a4d"/><stop offset="1" stop-color="#ff4d00"/></linearGradient></defs>
+    <path d="M45 195 A115 115 0 1 1 255 195" fill="none" stroke="#262a34" stroke-width="16" stroke-linecap="round"/>
+    <path id="arc" d="M45 195 A115 115 0 1 1 255 195" fill="none" stroke="url(#gg)" stroke-width="16" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100" style="transition:stroke-dasharray .5s"/>
+    <path id="limit" d="" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+  </svg>
+  <div class="speed"><b id="spd">0</b><span>km/h</span></div>
+  <div class="bat"><i id="batbar"></i></div>
+  <div class="stats">
+    <div class="stat"><b id="batt">80%</b><span>Battery</span></div>
+    <div class="stat"><b id="range">28 km</b><span>Range</span></div>
+    <div class="stat"><b id="odo">142 km</b><span>Total</span></div>
+  </div>
+</section>
+
+<div class="grid">
+  <button class="tile" id="lock">
+    <svg viewBox="0 0 24 24" id="lockIcon"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+    <div><div class="t">Lock</div><div class="s" id="lockS">Unlocked</div></div>
+  </button>
+  <button class="tile" id="light">
+    <svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg>
+    <div><div class="t">Headlight</div><div class="s" id="lightS">Off</div></div>
+  </button>
+</div>
+
+<div class="card">
+  <div class="lbl">Riding mode</div>
+  <div class="modes" id="modes">
+    <button data-m="eco">Eco</button><button data-m="drive" class="on">Drive</button><button data-m="sport">Sport</button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="row"><span class="lbl">Max speed</span><span class="big"><span id="maxv">25</span><small>km/h</small></span></div>
+  <input type="range" id="max" min="0" max="35" step="1" value="25">
+  <div class="ticks"><span>0</span><span>10</span><span>20</span><span>30</span><span>35</span></div>
+  <button class="apply" id="apply">Apply speed limit</button>
+  <div class="note">Use only where legal. Local laws often cap e-scooters at 20–25 km/h.</div>
+</div>
+
+<div class="foot" id="foot">Demo mode: nothing is sent to a real scooter.</div>
+<div id="toast"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const S={locked:false,light:false,mode:'drive',max:25,applied:25,speed:0,batt:80,connected:false};
+const MODE_CAP={eco:15,drive:25,sport:35};
+let ble=null,toastT;
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),3600)}
+
+function render(){
+  $('lock').classList.toggle('on',S.locked);$('lockS').textContent=S.locked?'Locked':'Unlocked';
+  $('light').classList.toggle('on',S.light);$('lightS').textContent=S.light?'On':'Off';
+  document.querySelectorAll('#modes button').forEach(b=>b.classList.toggle('on',b.dataset.m===S.mode));
+  $('maxv').textContent=S.max;$('max').value=S.max;$('max').style.setProperty('--p',S.max/35*100+'%');
+  $('spd').textContent=Math.round(S.speed);
+  $('arc').setAttribute('stroke-dasharray',(S.speed/35*100).toFixed(1)+' 100');
+  $('batt').textContent=S.batt+'%';$('batbar').style.width=S.batt+'%';$('range').textContent=Math.round(S.batt*.35)+' km';
+  // limit marker on the arc
+  const a=(135+270*S.applied/35)*Math.PI/180,cx=150,cy=145,r1=104,r2=126;
+  $('limit').setAttribute('d',`M${cx+r1*Math.cos(a)} ${cy+r1*Math.sin(a)} L${cx+r2*Math.cos(a)} ${cy+r2*Math.sin(a)}`);
+  $('dot').classList.toggle('on',S.connected);
+  $('status').textContent=S.connected?'Bluetooth connected':'Demo mode';
+  $('connect').textContent=S.connected?'Disconnect':'Connect';
+  $('foot').textContent=S.connected?'Connected over Bluetooth.':'Demo mode: nothing is sent to a real scooter.';
+}
+
+// Command layer: demo mode updates local state; BLE mode tries the scooter.
+async function send(cmd,val){
+  if(S.connected){
+    try{ await bleCommand(cmd,val) }
+    catch(e){ toast(e.message); return false }
+  }
+  return true;
+}
+async function bleCommand(){
+  // Scooter 4 uses Xiaomi's encrypted pairing (Mi account key). Without that
+  // key the scooter ignores commands, so we refuse rather than pretend.
+  throw new Error('Connected, but this scooter needs Xiaomi’s encrypted pairing key before it accepts commands. Not supported yet.');
+}
+
+$('lock').onclick=async()=>{const v=!S.locked;if(await send('lock',v)){S.locked=v;if(v)S.speed=0;render()}};
+$('light').onclick=async()=>{const v=!S.light;if(await send('light',v)){S.light=v;render()}};
+$('modes').onclick=async e=>{const m=e.target.dataset.m;if(!m)return;if(await send('mode',m)){S.mode=m;S.max=Math.min(S.max,MODE_CAP[m]);S.applied=Math.min(S.applied,S.max);render()}};
+$('max').oninput=e=>{S.max=+e.target.value;$('maxv').textContent=S.max;$('max').style.setProperty('--p',S.max/35*100+'%')};
+$('apply').onclick=async()=>{if(await send('maxspeed',S.max)){S.applied=S.max;render();toast('Max speed set to '+S.max+' km/h')}};
+
+$('connect').onclick=async()=>{
+  if(S.connected){try{ble&&ble.gatt.disconnect()}catch(e){}S.connected=false;ble=null;render();return}
+  if(!navigator.bluetooth){toast('Bluetooth isn’t available in this browser. Open in Chrome on Android.');return}
+  try{
+    ble=await navigator.bluetooth.requestDevice({acceptAllDevices:true,optionalServices:[0xfe95,'6e400001-b5a3-f393-e0a9-e50e24dcca9e']});
+    await ble.gatt.connect();
+    ble.addEventListener('gattserverdisconnected',()=>{S.connected=false;render()});
+    S.connected=true;render();
+    toast('Connected to '+(ble.name||'device')+'. Commands need Xiaomi pairing, which isn’t supported yet.');
+  }catch(e){if(e.name!=='NotFoundError')toast('Could not connect: '+e.message)}
+};
+
+// Demo ride simulation
+setInterval(()=>{
+  if(S.connected)return;
+  const target=S.locked?0:(S.speed<S.applied-1?S.applied*0.8:S.applied*0.75);
+  if(S.demoRide){S.speed+=(Math.min(target,S.applied)-S.speed)*.2}else{S.speed*=.8}
+  render();
+},500);
+$('arc').parentElement.parentElement.onclick=()=>{S.demoRide=!S.demoRide;toast(S.demoRide?'Demo ride on':'Demo ride off')};
+
+render();
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
