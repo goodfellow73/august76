@@ -82,12 +82,30 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border:0;border-radiu
 .alert{background:#3b0d0d;border:1px solid #7f1d1d;color:#fecaca;border-radius:16px;padding:12px 14px;margin-top:12px;font-weight:700;text-align:center;display:none}
 .alert.show{display:block;animation:bl .6s infinite}
 nav{position:fixed;left:0;right:0;bottom:0;background:rgba(11,12,16,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:8px 8px max(10px,env(safe-area-inset-bottom));display:flex;justify-content:center;z-index:5}
-nav div{display:grid;grid-template-columns:repeat(4,1fr);width:100%;max-width:480px}
-nav button{background:none;border:0;color:var(--mut);font:inherit;font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0}
+nav div{display:grid;grid-template-columns:repeat(5,1fr);width:100%;max-width:480px}
+nav button{background:none;border:0;color:var(--mut);font:inherit;font-size:10px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0}
 nav svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 nav button.on{color:var(--ac2)}
 .page{display:none}.page.on{display:block}
 .badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--warn);border:1px solid #5c4600;background:#2a2000;border-radius:999px;padding:3px 8px}
+.chosen{font-size:17px;font-weight:700;color:var(--ac2);margin:8px 0 4px}
+.way{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px;font-size:13px;line-height:1.5;color:var(--mut)}
+.way b{color:var(--tx)}
+.preset{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.preset button{border:1px solid var(--line);background:var(--card2);color:var(--tx);border-radius:14px;padding:14px 4px;font:inherit;font-weight:800;font-size:15px}
+.board{border-radius:22px;border:1px solid var(--line);background:#000;min-height:160px;display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;margin-top:12px;overflow:hidden}
+.board b{font-weight:900;line-height:1.05;word-break:break-word}
+.peers{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.peers span{font-size:11px;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:4px 10px;color:var(--mut)}
+.feed{margin-top:12px}
+.feed div{display:flex;gap:8px;padding:8px 0;border-top:1px solid var(--line);font-size:14px}
+.feed div:first-child{border-top:0}.feed .who{color:var(--ac2);font-weight:700;white-space:nowrap}
+.signbig{position:fixed;inset:0;background:#000;z-index:20;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px}
+.signbig.show{display:flex}
+.signbig b{color:#fff;font-weight:900;font-size:16vw;line-height:1;word-break:break-word}
+.signbig .x{position:absolute;top:calc(16px + env(safe-area-inset-top));right:20px;color:#fff;font-size:34px;background:none;border:0}
+.signbig.flash{animation:fl .5s steps(1) infinite}
+@keyframes fl{50%{background:#fff}50.01%{color:#000}}
 .sel{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--tx);border-radius:12px;padding:11px;font:inherit;font-size:14px;margin-top:8px}
 .f2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .fl{font-size:12px;color:var(--mut);margin-top:12px;display:block}
@@ -143,7 +161,8 @@ nav button.on{color:var(--ac2)}
     <div class="note">Screen only: this doesn't change the scooter's own limit. Use only where legal.</div>
   </div>
   <div class="card">
-    <div class="lbl">My scooter</div>
+    <div class="row"><span class="lbl">My scooter</span><button class="small" id="whichBtn">Which one is mine?</button></div>
+    <div class="chosen" id="chosen">Mi Scooter 1S</div>
     <select class="sel" id="model">
       <option value="s1">Xiaomi Mi Electric Scooter 1S</option>
       <option value="s4">Xiaomi Electric Scooter 4</option>
@@ -157,6 +176,18 @@ nav button.on{color:var(--ac2)}
       <label class="fl">Weather<select class="sel" id="temp"><option value="warm">Warm (15°C+)</option><option value="cool">Cool (5–15°C)</option><option value="cold">Cold (under 5°C)</option></select></label>
     </div>
     <div class="note" id="spec">Used to make the range estimate closer to real life.</div>
+    <div id="whichHelp" style="display:none">
+      <div class="note" style="margin-top:14px;color:var(--tx)"><b>3 easy ways to check which model you have:</b></div>
+      <div class="way"><b>1. The Mi Home app</b><br>Open Mi Home and tap your scooter. The exact name is at the top, e.g. "Mi Electric Scooter 1S".</div>
+      <div class="way"><b>2. The sticker</b><br>Look on the stem (the pole) or under the footboard for a label. It shows the model name and a number like <b>DDHBC02NEB</b> (1S) or <b>DDHBC08NEB</b> (Scooter 4).</div>
+      <div class="way"><b>3. By looking at it</b><br>
+        <b>1S:</b> smaller, 8.5" tyres, no suspension, single rear reflector. The common older model.<br>
+        <b>Scooter 4:</b> 10" tubeless tyres, turn-signal look, bigger deck.<br>
+        <b>4 Pro:</b> largest of the "4" family, longest range.<br>
+        <b>4 Lite:</b> budget version, shorter range.<br>
+        <b>4 Ultra:</b> biggest, has suspension front and back.</div>
+      <div class="note">Still unsure? Tell me the number from the sticker and I'll identify it.</div>
+    </div>
   </div>
   <div class="card">
     <div class="row"><span class="lbl">Battery</span><span class="big"><span id="b2">80</span><small>%</small></span></div>
@@ -276,9 +307,48 @@ nav button.on{color:var(--ac2)}
   </div>
 </section>
 
+<!-- GROUP -->
+<section class="page" id="p-group">
+  <h2>Group ride</h2>
+  <div class="card" style="margin-top:0">
+    <div class="row"><span class="lbl">Signal board</span><span class="sub" id="groupStat"><i class="dot"></i><span>Solo</span></span></div>
+    <div class="board" id="board"><b id="boardTxt" style="font-size:34px;color:#444">Tap a signal</b></div>
+    <div class="peers" id="peers"></div>
+    <div class="preset" id="preset">
+      <button data-s="STOP" style="color:#ff6a6a">STOP</button>
+      <button data-s="SLOW" style="color:#f5b301">SLOW</button>
+      <button data-s="GO" style="color:#34d399">GO</button>
+      <button data-s="◀ LEFT">◀ LEFT</button>
+      <button data-s="RIGHT ▶">RIGHT ▶</button>
+      <button data-s="WAIT">WAIT</button>
+    </div>
+    <div class="row" style="gap:8px">
+      <input class="inp" id="msgIn" style="flex:1;width:auto;text-align:left" placeholder="Type your own…" maxlength="40">
+      <button class="small" id="msgSend">Show</button>
+    </div>
+    <div class="btn2">
+      <button class="btn sec" id="torchBtn">🔦 Torch</button>
+      <button class="btn" id="fullBtn">Full-screen sign</button>
+    </div>
+    <div class="note" id="groupNote">Open this same link on each phone in your group and everyone sees the signals live. On your own phone, "Full-screen sign" shows a big message you hold up.</div>
+  </div>
+  <div class="card">
+    <div class="lbl">Recent signals</div>
+    <div class="feed" id="feed"><div class="note" style="border:0">No signals yet.</div></div>
+  </div>
+  <div class="card">
+    <div class="row"><span class="lbl">Your name in the group</span></div>
+    <input class="sel" id="nameIn" maxlength="14" placeholder="e.g. Guy" style="text-align:left">
+    <div class="note">Shown next to the signals you send. Safety first: glance, don't stare. Keep your eyes on the road.</div>
+  </div>
+</section>
+
+<div class="signbig" id="signbig"><button class="x" id="signX">✕</button><b id="signTxt">STOP</b></div>
+
 <nav><div>
   <button class="on" data-p="home"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>Home</button>
   <button data-p="ride"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 12l4-4"/><path d="M12 7v1M7 12h1M16 12h1"/></svg>Ride</button>
+  <button data-p="group"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="10" r="2.3"/><path d="M4 19c0-2.8 2.2-5 5-5s5 2.2 5 5M15 15c2.2 0 4 1.6 4 4"/></svg>Group</button>
   <button data-p="stats"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Stats</button>
   <button data-p="service"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg>Service</button>
 </div></nav>
@@ -288,7 +358,7 @@ nav button.on{color:var(--ac2)}
 const $=id=>document.getElementById(id);
 const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const S={locked:false,light:false,mode:'drive',max:25,applied:25,speed:0,connected:false};
-const D=Object.assign({batt:80,odo:142,done:{tyre:80,bolts:0,brake:0,clean:0,bat:0,pro:0},trips:[],cost:0.5,alert:25,alertOn:false,park:null,charges:[],check:{},model:'s1',weight:75,temp:'warm',exps:[]},store.get('scooterData',{}));
+const D=Object.assign({batt:80,odo:142,done:{tyre:80,bolts:0,brake:0,clean:0,bat:0,pro:0},trips:[],cost:0.5,alert:25,alertOn:false,park:null,charges:[],check:{},model:'s1',weight:75,temp:'warm',exps:[],name:''},store.get('scooterData',{}));
 const old=store.get('scooterM',null);if(old&&!store.get('scooterData',null)){D.odo=old.odo??D.odo;Object.assign(D.done,old.done||{})}
 const save=()=>store.set('scooterData',D);
 let ble=null,toastT;
@@ -317,7 +387,7 @@ function renderHome(){
   $('arc').style.opacity=live<.5?0:1;$('arc').setAttribute('stroke-dasharray',(Math.min(live,35)/35*100).toFixed(1)+' 100');
   const a=(135+270*S.applied/35)*Math.PI/180,cx=150,cy=145;
   $('limit').setAttribute('d',`M${cx+104*Math.cos(a)} ${cy+104*Math.sin(a)} L${cx+126*Math.cos(a)} ${cy+126*Math.sin(a)}`);
-  const r=D.batt/100*fullRange();$('model').value=D.model;$('temp').value=D.temp;if(document.activeElement!==$('weight'))$('weight').value=D.weight;{const m=MODELS[D.model]||MODELS.s4;$('title').textContent=m.name;$('spec').textContent='Official: '+m.wh+' Wh battery, '+m.range+' km rated range, about '+m.charge+' h to charge. Real range is lower with heavier riders, Sport mode, hills, wind and cold, so the app adjusts for those.'}renderPlan();
+  const r=D.batt/100*fullRange();$('model').value=D.model;$('temp').value=D.temp;if(document.activeElement!==$('weight'))$('weight').value=D.weight;{const m=MODELS[D.model]||MODELS.s4;$('title').textContent=m.name;$('chosen').textContent=m.name;$('spec').textContent='Official: '+m.wh+' Wh battery, '+m.range+' km rated range, about '+m.charge+' h to charge. Real range is lower with heavier riders, Sport mode, hills, wind and cold, so the app adjusts for those.'}renderPlan();
   $('batt').textContent=D.batt+'%';$('batbar').style.width=D.batt+'%';$('range').textContent='~'+Math.round(r)+' km';$('odo').textContent=Math.round(D.odo)+' km';
   $('b2').textContent=D.batt;$('battIn').value=D.batt;$('battIn').style.setProperty('--p',D.batt+'%');
   $('r2').textContent='~'+Math.round(r)+' km';
@@ -448,7 +518,8 @@ function renderPlan(){
   $('chTime').textContent=D.batt>=100?'Full':fmtT(h*60);
   $('chAt').textContent=D.batt>=100?'Now':new Date(Date.now()+h*36e5).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
 }
-$('model').onchange=e=>{D.model=e.target.value;save();renderHome()};
+$('model').onchange=e=>{D.model=e.target.value;save();renderHome();toast('Set to '+(MODELS[D.model]||MODELS.s4).name)};
+$('whichBtn').onclick=()=>{const h=$('whichHelp');h.style.display=h.style.display==='none'?'block':'none'};
 $('temp').onchange=e=>{D.temp=e.target.value;save();renderHome()};
 $('weight').onchange=e=>{D.weight=Math.min(150,Math.max(30,+e.target.value||75));save();renderHome()};
 $('tripKm').oninput=renderPlan;$('tripRound').onchange=renderPlan;
@@ -471,6 +542,63 @@ function renderExp(){
 }
 $('addExp').onclick=()=>{const n=(prompt('What did you pay for? (e.g. new tyre)')||'').trim();if(!n)return;const a=parseFloat(prompt('How much did it cost?')||'');if(!(a>=0))return;D.exps.unshift({t:Date.now(),name:n.slice(0,60),amt:a});save();renderExp();toast('Expense added')};
 $('exps').onclick=e=>{const i=e.target.dataset.x;if(i==null||!confirm('Delete this expense?'))return;D.exps.splice(+i,1);save();renderExp()};
+
+// ---------- group signal board ----------
+const G={room:null,feed:[],peers:{},torch:null,track:null};
+$('nameIn').value=D.name||'';
+$('nameIn').onchange=e=>{D.name=e.target.value.slice(0,14);save()};
+const myName=()=>D.name||'Rider';
+function showSignal(txt,who,mine){
+  $('boardTxt').textContent=txt;$('boardTxt').style.cssText='font-size:'+Math.max(20,Math.min(46,520/Math.max(4,txt.length)))+'px;color:#fff';
+  G.feed.unshift({txt,who,t:Date.now()});G.feed=G.feed.slice(0,20);
+  $('feed').innerHTML=G.feed.map(f=>`<div><span class="who">${(f.who||'?').replace(/[<>&]/g,'')}</span><span>${f.txt.replace(/[<>&]/g,'')}</span></div>`).join('');
+  if(navigator.vibrate)navigator.vibrate(mine?30:[80,60,80]);
+}
+function sendSignal(txt){
+  txt=(txt||'').trim().slice(0,40);if(!txt)return;
+  showSignal(txt,myName(),true);
+  if(G.room){try{G.room.emit('sig',{txt,who:myName()})}catch(e){}}
+  bigSign(txt);
+}
+$('preset').onclick=e=>{const b=e.target.closest('button');if(b)sendSignal(b.dataset.s)};
+$('msgSend').onclick=()=>{sendSignal($('msgIn').value);$('msgIn').value=''};
+$('msgIn').addEventListener('keydown',e=>{if(e.key==='Enter'){sendSignal($('msgIn').value);$('msgIn').value=''}});
+
+// full-screen sign you hold up
+let flashT;
+function bigSign(txt){
+  $('signTxt').textContent=txt;const el=$('signbig');el.classList.add('show');
+  clearTimeout(flashT);el.classList.toggle('flash',/stop|wait|slow/i.test(txt));
+  flashT=setTimeout(()=>{el.classList.remove('show','flash')},6000);
+}
+$('fullBtn').onclick=()=>{bigSign($('boardTxt').textContent==='Tap a signal'?'HELLO':$('boardTxt').textContent)};
+$('signbig').onclick=$('signX').onclick=()=>{$('signbig').classList.remove('show','flash')};
+
+// torch (your own phone's flashlight) — Android Chrome
+$('torchBtn').onclick=async()=>{
+  try{
+    if(G.torch){G.track.stop();G.torch=null;G.track=null;$('torchBtn').classList.remove('on');$('torchBtn').textContent='🔦 Torch';return}
+    const s=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+    const tr=s.getVideoTracks()[0];
+    if(!(tr.getCapabilities&&tr.getCapabilities().torch)){tr.stop();toast('This phone/browser won’t let a web page use the flashlight. Try Chrome on Android.');return}
+    await tr.applyConstraints({advanced:[{torch:true}]});G.track=tr;G.torch=true;$('torchBtn').classList.add('on');$('torchBtn').textContent='🔦 Torch on';
+  }catch(e){toast('Camera permission is needed to use the flashlight.')}
+};
+
+// live sync via the artifact room (works on the shared claude.ai link; solo elsewhere)
+async function initRoom(){
+  try{
+    if(typeof window==='undefined'||!window.claude||!claude.use)return;
+    const room=await claude.use('room');if(!room)return;
+    G.room=room;
+    $('groupStat').innerHTML='<i class="dot on"></i><span>Live</span>';
+    $('groupNote').textContent='Live. Everyone who opens this shared link sees signals instantly. Share the link from the ⋯ menu, then tap "Share".';
+    room.on('sig',m=>{if(m&&m.data&&m.data.txt)showSignal(String(m.data.txt).slice(0,40),String(m.data.who||'Rider').slice(0,14),false)});
+    room.presence({name:myName()});
+    room.onPeers(list=>{G.peers=list||[];const me=list?list.length:1;$('peers').innerHTML=(list||[]).map(p=>`<span>${((p.state&&p.state.name)||'Rider').replace(/[<>&]/g,'')}${p.you?' (you)':''}</span>`).join('');});
+  }catch(e){}
+}
+initRoom();
 
 function renderAll(){renderHome();renderRide();renderStats();renderService();renderAch();renderExp()}
 renderAll();
