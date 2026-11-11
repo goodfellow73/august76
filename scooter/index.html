@@ -89,6 +89,10 @@ nav button.on{color:var(--ac2)}
 .page{display:none}.page.on{display:block}
 .badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--warn);border:1px solid #5c4600;background:#2a2000;border-radius:999px;padding:3px 8px}
 .chosen{font-size:17px;font-weight:700;color:var(--ac2);margin:8px 0 4px}
+.specsheet{margin-top:10px}
+.specsheet div{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-top:1px solid var(--line);font-size:14px}
+.specsheet div:first-child{border-top:0}
+.specsheet .k{color:var(--mut)}.specsheet .v{font-weight:600;text-align:right}
 .way{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px;font-size:13px;line-height:1.5;color:var(--mut)}
 .way b{color:var(--tx)}
 .preset{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
@@ -188,6 +192,11 @@ nav button.on{color:var(--ac2)}
         <b>4 Ultra:</b> biggest, has suspension front and back.</div>
       <div class="note">Still unsure? Tell me the number from the sticker and I'll identify it.</div>
     </div>
+  </div>
+  <div class="card">
+    <div class="row"><span class="lbl">Full specs</span><span class="badge" style="color:var(--ok);border-color:#14532d;background:#052e1a">Official</span></div>
+    <div class="specsheet" id="specsheet"></div>
+    <div class="note">From Xiaomi's official spec pages. Range and charge time are ideal-condition figures; real numbers vary.</div>
   </div>
   <div class="card">
     <div class="row"><span class="lbl">Battery</span><span class="big"><span id="b2">80</span><small>%</small></span></div>
@@ -373,6 +382,14 @@ document.querySelector('nav').onclick=e=>{const b=e.target.closest('button');if(
 // ---------- home ----------
 // Official Xiaomi specs (mi.com): rated range is measured at 75 kg, 15 km/h, flat road.
 const MODELS={s1:{name:'Mi Scooter 1S',range:30,charge:5.5,wh:275},s4:{name:'Scooter 4',range:35,charge:5,wh:275},pro:{name:'Scooter 4 Pro',range:55,charge:8.5,wh:446},pro2:{name:'Scooter 4 Pro (2nd Gen)',range:60,charge:9,wh:468},lite:{name:'Scooter 4 Lite',range:20,charge:4.5,wh:187},ultra:{name:'Scooter 4 Ultra',range:70,charge:6.5,wh:562}};
+// Exact official Xiaomi specifications per model
+const SPECS={
+ s1:{'Top speed':'25 km/h','Speed modes':'6 / 20 / 25 km/h','Rated range':'30 km','Motor':'250 W (500 W peak)','Battery':'275 Wh · 7650 mAh','Charge time':'~5.5 h','Weight':'12.5 kg','Max load':'100 kg','Tyres':'8.5″ pneumatic','Brakes':'E-ABS front + rear disc','Max incline':'14%','Water resistance':'IP54 (splash only)'},
+ s4:{'Top speed':'25 km/h','Speed modes':'6 / 20 / 25 km/h','Rated range':'35 km','Motor':'300 W (600 W peak)','Battery':'275 Wh · 7650 mAh','Charge time':'~5 h','Weight':'17.2 kg','Max load':'120 kg','Tyres':'10″ tubeless','Brakes':'E-ABS front + rear disc','Max incline':'16%','Water resistance':'IP54 (splash only)'},
+ pro:{'Top speed':'25 km/h','Speed modes':'6 / 20 / 25 km/h','Rated range':'55 km','Motor':'350 W (700 W peak)','Battery':'446 Wh','Charge time':'~8–9 h','Weight':'17 kg','Max load':'120 kg','Tyres':'10″ tubeless','Brakes':'E-ABS front + rear disc','Max incline':'20%','Water resistance':'IP54 (splash only)'},
+ pro2:{'Top speed':'25 km/h','Speed modes':'6 / 20 / 25 km/h','Rated range':'60 km','Motor':'350 W (700 W peak)','Battery':'468 Wh','Charge time':'~9 h','Weight':'18.5 kg','Max load':'120 kg','Tyres':'10″ tubeless','Brakes':'Drum + E-ABS','Max incline':'20%','Water resistance':'IP55'},
+ lite:{'Top speed':'25 km/h','Speed modes':'6 / 20 / 25 km/h','Rated range':'20 km','Motor':'250 W','Battery':'187 Wh · 5200 mAh','Charge time':'~4.5 h','Weight':'13 kg','Max load':'100 kg','Tyres':'8.5″','Brakes':'E-ABS front + rear drum','Max incline':'14%','Water resistance':'IP54 (splash only)'},
+ ultra:{'Top speed':'25 km/h','Speed modes':'6 / 20 / 25 / 25 km/h','Rated range':'70 km','Motor':'500 W (940 W peak)','Battery':'562 Wh','Charge time':'~6.5 h','Weight':'24.5 kg','Max load':'120 kg','Tyres':'10″ tubeless, front + rear suspension','Brakes':'Dual disc + E-ABS','Max incline':'22%','Water resistance':'IP55'}};
 function fullRange(){const m=MODELS[D.model]||MODELS.s4;
   const mode={eco:1.15,drive:1,sport:.8}[S.mode],w=Math.min(1.2,Math.max(.6,1-(D.weight-75)*.006)),t={warm:1,cool:.88,cold:.72}[D.temp];
   return m.range*.75*mode*w*t}
@@ -387,7 +404,7 @@ function renderHome(){
   $('arc').style.opacity=live<.5?0:1;$('arc').setAttribute('stroke-dasharray',(Math.min(live,35)/35*100).toFixed(1)+' 100');
   const a=(135+270*S.applied/35)*Math.PI/180,cx=150,cy=145;
   $('limit').setAttribute('d',`M${cx+104*Math.cos(a)} ${cy+104*Math.sin(a)} L${cx+126*Math.cos(a)} ${cy+126*Math.sin(a)}`);
-  const r=D.batt/100*fullRange();$('model').value=D.model;$('temp').value=D.temp;if(document.activeElement!==$('weight'))$('weight').value=D.weight;{const m=MODELS[D.model]||MODELS.s4;$('title').textContent=m.name;$('chosen').textContent=m.name;$('spec').textContent='Official: '+m.wh+' Wh battery, '+m.range+' km rated range, about '+m.charge+' h to charge. Real range is lower with heavier riders, Sport mode, hills, wind and cold, so the app adjusts for those.'}renderPlan();
+  const r=D.batt/100*fullRange();$('model').value=D.model;$('temp').value=D.temp;if(document.activeElement!==$('weight'))$('weight').value=D.weight;{const m=MODELS[D.model]||MODELS.s4;$('title').textContent=m.name;$('chosen').textContent=m.name;$('spec').textContent='Official: '+m.wh+' Wh battery, '+m.range+' km rated range, about '+m.charge+' h to charge. Real range is lower with heavier riders, Sport mode, hills, wind and cold, so the app adjusts for those.';const sp=SPECS[D.model]||SPECS.s1;$('specsheet').innerHTML=Object.keys(sp).map(k=>`<div><span class="k">${k}</span><span class="v">${sp[k]}</span></div>`).join('')}renderPlan();
   $('batt').textContent=D.batt+'%';$('batbar').style.width=D.batt+'%';$('range').textContent='~'+Math.round(r)+' km';$('odo').textContent=Math.round(D.odo)+' km';
   $('b2').textContent=D.batt;$('battIn').value=D.batt;$('battIn').style.setProperty('--p',D.batt+'%');
   $('r2').textContent='~'+Math.round(r)+' km';
