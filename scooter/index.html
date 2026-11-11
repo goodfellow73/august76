@@ -178,7 +178,7 @@ async function bleCommand(){
 
 $('lock').onclick=async()=>{const v=!S.locked;if(await send('lock',v)){S.locked=v;if(v)S.speed=0;render()}};
 $('light').onclick=async()=>{const v=!S.light;if(await send('light',v)){S.light=v;render()}};
-$('modes').onclick=async e=>{const m=e.target.dataset.m;if(!m)return;if(await send('mode',m)){S.mode=m;S.max=Math.min(S.max,MODE_CAP[m]);S.applied=Math.min(S.applied,S.max);render()}};
+$('modes').onclick=async e=>{const m=e.target.dataset.m;if(!m)return;if(await send('mode',m)){S.mode=m;render()}};
 $('max').oninput=e=>{S.max=+e.target.value;$('maxv').textContent=S.max;$('max').style.setProperty('--p',S.max/35*100+'%')};
 $('apply').onclick=async()=>{if(await send('maxspeed',S.max)){S.applied=S.max;render();toast('Max speed set to '+S.max+' km/h')}};
 
