@@ -58,6 +58,14 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border:0;border-radiu
 .note{font-size:12px;color:var(--mut);line-height:1.5;margin-top:10px}
 .apply{width:100%;margin-top:14px;border:0;border-radius:16px;padding:15px;font:inherit;font-weight:700;font-size:15px;color:#fff;background:linear-gradient(135deg,var(--ac2),var(--ac));box-shadow:0 6px 20px rgba(255,106,26,.3)}
 .apply:active{transform:scale(.98)}
+.bigbat{display:flex;align-items:baseline;gap:10px}.bigbat b{font-size:44px;font-weight:800;letter-spacing:-1px}.bigbat span{color:var(--mut);font-size:14px}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.kv div{background:var(--bg);border-radius:14px;padding:12px}.kv b{display:block;font-size:18px}.kv span{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.6px}
+.mi{padding:14px 0;border-top:1px solid var(--line)}.mi:first-of-type{border-top:0}
+.mi .top{display:flex;justify-content:space-between;align-items:center;gap:10px}.mi .n{font-weight:600;font-size:14px}.mi .d{font-size:12px;color:var(--mut);margin-top:3px}
+.mi .bar{height:5px;background:var(--line);border-radius:9px;margin-top:9px;overflow:hidden}.mi .bar i{display:block;height:100%;border-radius:9px;background:var(--ok)}
+.mi.warn .bar i{background:#f5b301}.mi.bad .bar i{background:var(--bad)}.mi.bad .d{color:#ff8b8b}
+.done{border:1px solid var(--line);background:var(--card2);color:var(--tx);border-radius:999px;padding:7px 12px;font:inherit;font-size:12px;font-weight:600;white-space:nowrap}
+.odo-in{width:90px;background:var(--bg);border:1px solid var(--line);color:var(--tx);border-radius:10px;padding:8px;font:inherit;font-size:14px;text-align:right}
 #toast{position:fixed;left:16px;right:16px;bottom:max(20px,env(safe-area-inset-bottom));max-width:448px;margin:auto;background:#242833;border:1px solid var(--line);border-radius:16px;padding:14px 16px;font-size:13px;line-height:1.4;opacity:0;transform:translateY(12px);transition:.25s;pointer-events:none;z-index:9}
 #toast.show{opacity:1;transform:none}
 .foot{text-align:center;color:var(--mut);font-size:11px;margin-top:18px}
@@ -111,6 +119,22 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border:0;border-radiu
   <div class="note">Use only where legal. Local laws often cap e-scooters at 20–25 km/h.</div>
 </div>
 
+<div class="card">
+  <div class="lbl">Battery</div>
+  <div class="bigbat"><b id="b2">80%</b><span id="b2s"></span></div>
+  <div class="kv">
+    <div><b id="r2">28 km</b><span>Range left (approx)</span></div>
+    <div><b id="t2">1 h 10 min</b><span>Ride time left</span></div>
+  </div>
+  <div class="note">Range is an estimate (max ~55 km on a full charge in Eco, less in Sport, with a heavy rider, hills or cold weather). Your scooter's real value will differ.</div>
+</div>
+
+<div class="card">
+  <div class="row"><span class="lbl">Maintenance</span><span class="lbl" style="display:flex;align-items:center;gap:8px">Odometer <input class="odo-in" id="odoIn" type="number" min="0" inputmode="numeric"> km</span></div>
+  <div id="maint" style="margin-top:8px"></div>
+  <div class="note">Nobody can predict exactly when a scooter will break. These are the usual service intervals, counted from your odometer, so you catch wear before it causes a failure. Check your manual for exact figures.</div>
+</div>
+
 <div class="foot" id="foot">Demo mode: nothing is sent to a real scooter.</div>
 <div id="toast"></div>
 
@@ -127,7 +151,7 @@ function render(){
   document.querySelectorAll('#modes button').forEach(b=>b.classList.toggle('on',b.dataset.m===S.mode));
   $('maxv').textContent=S.max;$('max').value=S.max;$('max').style.setProperty('--p',S.max/35*100+'%');
   $('spd').textContent=Math.round(S.speed);
-  $('arc').setAttribute('stroke-dasharray',(S.speed/35*100).toFixed(1)+' 100');
+  $('arc').style.opacity=S.speed<.5?0:1;$('arc').setAttribute('stroke-dasharray',(S.speed/35*100).toFixed(1)+' 100');
   $('batt').textContent=S.batt+'%';$('batbar').style.width=S.batt+'%';$('range').textContent=Math.round(S.batt*.35)+' km';
   // limit marker on the arc
   const a=(135+270*S.applied/35)*Math.PI/180,cx=150,cy=145,r1=104,r2=126;
@@ -179,6 +203,39 @@ setInterval(()=>{
 },500);
 $('arc').parentElement.parentElement.onclick=()=>{S.demoRide=!S.demoRide;toast(S.demoRide?'Demo ride on':'Demo ride off')};
 
+// ---- Battery estimate + maintenance ----
+const FULL_RANGE={eco:55,drive:45,sport:35};
+const ITEMS=[
+ {id:'tyre',n:'Tyre pressure & tread',km:100,d:'Check pressure (about 50\u201355 psi / 3.5\u20134 bar) and tread wear'},
+ {id:'bolts',n:'Tighten bolts & folding latch',km:200,d:'Handlebar, stem and folding mechanism'},
+ {id:'brake',n:'Brakes & brake pads',km:300,d:'Pads wear out; check lever feel and stopping distance'},
+ {id:'clean',n:'Clean & lubricate',km:500,d:'Wipe down, lube folding hinge and cables, avoid water on ports'},
+ {id:'bat',n:'Battery health check',km:1000,d:'Capacity drop, swelling, charge port; keep it between 20\u201380% when stored'},
+ {id:'pro',n:'Full service at a shop',km:2000,d:'Bearings, motor, controller, wiring inspection'}
+];
+let M={odo:142,done:{tyre:80,bolts:0,brake:0,clean:0,bat:0,pro:0}};
+try{Object.assign(M,JSON.parse(localStorage.getItem('scooterM')||'{}'))}catch(e){}
+function saveM(){try{localStorage.setItem('scooterM',JSON.stringify(M))}catch(e){}}
+function fmtT(min){const h=Math.floor(min/60),m=Math.round(min%60);return h?h+' h '+m+' min':m+' min'}
+function renderExtra(){
+  const full=FULL_RANGE[S.mode],r=S.batt/100*full;
+  $('b2').textContent=S.batt+'%';
+  $('b2s').textContent=S.batt<=15?'Low \u2013 charge soon':S.batt<=40?'Okay':'Good';
+  $('r2').textContent='~'+Math.round(r)+' km';
+  const v=Math.max(10,Math.min(S.applied,S.mode==='eco'?15:S.mode==='drive'?22:30)*0.85);
+  $('t2').textContent=fmtT(r/v*60);
+  $('range').textContent='~'+Math.round(r)+' km';
+  $('odo').textContent=M.odo+' km';
+  if(document.activeElement!==$('odoIn'))$('odoIn').value=M.odo;
+  $('maint').innerHTML=ITEMS.map(it=>{
+    const last=M.done[it.id]??0,used=M.odo-last,left=it.km-used,pct=Math.min(100,used/it.km*100);
+    const cls=left<=0?'bad':left<=it.km*0.2?'warn':'';
+    const txt=left<=0?'Overdue by '+(-left)+' km':left+' km until due';
+    return `<div class="mi ${cls}"><div class="top"><div><div class="n">${it.n}</div><div class="d">${txt} \u00b7 every ${it.km} km</div></div><button class="done" data-id="${it.id}">Done</button></div><div class="bar"><i style="width:${pct}%"></i></div><div class="d">${it.d}</div></div>`}).join('');
+}
+$('odoIn').onchange=e=>{M.odo=Math.max(0,+e.target.value||0);saveM();renderExtra()};
+$('maint').onclick=e=>{const id=e.target.dataset.id;if(!id)return;M.done[id]=M.odo;saveM();renderExtra();toast('Marked as done at '+M.odo+' km')};
+const _render=render;render=function(){_render();renderExtra()};
 render();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
