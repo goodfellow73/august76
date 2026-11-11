@@ -87,13 +87,25 @@ nav button{background:none;border:0;color:var(--mut);font:inherit;font-size:11px
 nav svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 nav button.on{color:var(--ac2)}
 .page{display:none}.page.on{display:block}
+.badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--warn);border:1px solid #5c4600;background:#2a2000;border-radius:999px;padding:3px 8px}
+.sel{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--tx);border-radius:12px;padding:11px;font:inherit;font-size:14px;margin-top:8px}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fl{font-size:12px;color:var(--mut);margin-top:12px;display:block}
+.fl .inp,.fl .sel{width:100%;text-align:left;margin-top:6px}
+.verdict{margin-top:12px;border-radius:14px;padding:14px;font-weight:700;font-size:15px;background:var(--bg);border:1px solid var(--line)}
+.verdict.yes{border-color:#14532d;background:#052e1a;color:#86efac}.verdict.maybe{border-color:#5c4600;background:#2a2000;color:#fde68a}.verdict.no{border-color:#7f1d1d;background:#3b0d0d;color:#fecaca}
+.verdict small{display:block;font-weight:500;font-size:12px;opacity:.85;margin-top:4px}
+.ach{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.ach div{background:var(--bg);border:1px solid var(--line);border-radius:16px;padding:12px 6px;text-align:center;opacity:.35;filter:grayscale(1)}
+.ach div.got{opacity:1;filter:none;border-color:#6b3513}
+.ach b{display:block;font-size:26px}.ach span{font-size:11px;color:var(--mut);display:block;margin-top:4px;line-height:1.3}
 #toast{position:fixed;left:16px;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));max-width:448px;margin:auto;background:#242833;border:1px solid var(--line);border-radius:16px;padding:14px 16px;font-size:13px;line-height:1.4;opacity:0;transform:translateY(12px);transition:.25s;pointer-events:none;z-index:9}
 #toast.show{opacity:1;transform:none}
 </style>
 </head>
 <body>
 <header>
-  <div><h1>Scooter 4</h1><div class="sub"><i class="dot" id="dot"></i><span id="status">Demo mode</span></div></div>
+  <div><h1 id="title">Scooter 4</h1><div class="sub"><i class="dot" id="dot"></i><span id="status">Demo mode</span></div></div>
   <button class="pill" id="connect">Connect</button>
 </header>
 
@@ -114,7 +126,8 @@ nav button.on{color:var(--ac2)}
       <div class="stat"><b id="odo">142 km</b><span>Total</span></div>
     </div>
   </div>
-  <div class="grid">
+  <div class="row" style="margin-top:16px"><span class="lbl">Controls</span><span class="badge">Preview · screen only</span></div>
+  <div class="grid" style="margin-top:8px">
     <button class="tile" id="lock"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><div><div class="t">Lock</div><div class="s" id="lockS">Unlocked</div></div></button>
     <button class="tile" id="light"><svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg><div><div class="t">Headlight</div><div class="s" id="lightS">Off</div></div></button>
   </div>
@@ -130,6 +143,20 @@ nav button.on{color:var(--ac2)}
     <div class="note">Screen only: this doesn't change the scooter's own limit. Use only where legal.</div>
   </div>
   <div class="card">
+    <div class="lbl">My scooter</div>
+    <select class="sel" id="model">
+      <option value="s4">Xiaomi Electric Scooter 4</option>
+      <option value="pro">Xiaomi Electric Scooter 4 Pro</option>
+      <option value="lite">Xiaomi Electric Scooter 4 Lite</option>
+      <option value="ultra">Xiaomi Electric Scooter 4 Ultra</option>
+    </select>
+    <div class="f2">
+      <label class="fl">Rider weight (kg)<input class="inp" id="weight" type="number" min="30" max="150" inputmode="numeric"></label>
+      <label class="fl">Weather<select class="sel" id="temp"><option value="warm">Warm (15°C+)</option><option value="cool">Cool (5–15°C)</option><option value="cold">Cold (under 5°C)</option></select></label>
+    </div>
+    <div class="note">Used to make the range estimate closer to real life.</div>
+  </div>
+  <div class="card">
     <div class="row"><span class="lbl">Battery</span><span class="big"><span id="b2">80</span><small>%</small></span></div>
     <input type="range" id="battIn" min="0" max="100" step="1" value="80">
     <div class="note">Set this to what your scooter's display shows. The app uses it for range and time left.</div>
@@ -137,6 +164,22 @@ nav button.on{color:var(--ac2)}
       <div><b id="r2">~36 km</b><span>Range left</span></div>
       <div><b id="t2">1 h 56 min</b><span>Ride time left</span></div>
     </div>
+  </div>
+  <div class="card">
+    <div class="lbl">Can I make it?</div>
+    <div class="f2">
+      <label class="fl">Trip distance (km)<input class="inp" id="tripKm" type="number" min="0" step="0.5" inputmode="decimal" placeholder="e.g. 8"></label>
+      <label class="fl">Coming back too?<select class="sel" id="tripRound"><option value="1">One way</option><option value="2">Round trip</option></select></label>
+    </div>
+    <div class="verdict" id="verdict">Enter a distance to check.</div>
+  </div>
+  <div class="card">
+    <div class="lbl">Charging calculator</div>
+    <div class="kv">
+      <div><b id="chTime">–</b><span>Time to 100%</span></div>
+      <div><b id="chAt">–</b><span>Full at</span></div>
+    </div>
+    <div class="note">Based on your battery % above and the charger that comes with your model. Approximate, so check your manual.</div>
   </div>
 </section>
 
@@ -190,6 +233,10 @@ nav button.on{color:var(--ac2)}
     <div class="row" style="margin-top:12px"><span class="note" style="margin:0">Car cost per km</span><input class="inp" id="costIn" type="number" step="0.1" min="0" inputmode="decimal"></div>
   </div>
   <div class="card">
+    <div class="lbl">Achievements</div>
+    <div class="ach" id="ach"></div>
+  </div>
+  <div class="card">
     <div class="row"><span class="lbl">Ride history</span><button class="small" id="addTrip">+ Add manually</button></div>
     <div id="trips" style="margin-top:6px"></div>
   </div>
@@ -216,6 +263,15 @@ nav button.on{color:var(--ac2)}
     </div>
     <div class="note">Battery tip: charge after rides, don't leave it at 0%, and store it at 40–60% if you won't ride for weeks.</div>
   </div>
+  <div class="card">
+    <div class="row"><span class="lbl">Expenses</span><button class="small" id="addExp">+ Add</button></div>
+    <div class="kv">
+      <div><b id="eTotal">0</b><span>Total spent</span></div>
+      <div><b id="ePerKm">0</b><span>Cost per km</span></div>
+    </div>
+    <div id="exps" style="margin-top:8px"></div>
+    <div class="note">Log parts, repairs, tyres, accessories. Include the scooter's price if you want the true cost per km.</div>
+  </div>
 </section>
 
 <nav><div>
@@ -230,7 +286,7 @@ nav button.on{color:var(--ac2)}
 const $=id=>document.getElementById(id);
 const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const S={locked:false,light:false,mode:'drive',max:25,applied:25,speed:0,connected:false};
-const D=Object.assign({batt:80,odo:142,done:{tyre:80,bolts:0,brake:0,clean:0,bat:0,pro:0},trips:[],cost:0.5,alert:25,alertOn:false,park:null,charges:[],check:{}},store.get('scooterData',{}));
+const D=Object.assign({batt:80,odo:142,done:{tyre:80,bolts:0,brake:0,clean:0,bat:0,pro:0},trips:[],cost:0.5,alert:25,alertOn:false,park:null,charges:[],check:{},model:'s4',weight:75,temp:'warm',exps:[]},store.get('scooterData',{}));
 const old=store.get('scooterM',null);if(old&&!store.get('scooterData',null)){D.odo=old.odo??D.odo;Object.assign(D.done,old.done||{})}
 const save=()=>store.set('scooterData',D);
 let ble=null,toastT;
@@ -243,7 +299,10 @@ document.querySelector('nav').onclick=e=>{const b=e.target.closest('button');if(
   window.scrollTo(0,0);renderAll()};
 
 // ---------- home ----------
-const FULL_RANGE={eco:55,drive:45,sport:35};
+const MODELS={s4:{name:'Scooter 4',range:35,charge:8.5},pro:{name:'Scooter 4 Pro',range:55,charge:8.5},lite:{name:'Scooter 4 Lite',range:20,charge:5.5},ultra:{name:'Scooter 4 Ultra',range:70,charge:7.5}};
+function fullRange(){const m=MODELS[D.model]||MODELS.s4;
+  const mode={eco:1.15,drive:1,sport:.8}[S.mode],w=Math.min(1.2,Math.max(.6,1-(D.weight-75)*.006)),t={warm:1,cool:.88,cold:.72}[D.temp];
+  return m.range*.75*mode*w*t}
 const fmtT=min=>{const h=Math.floor(min/60),m=Math.round(min%60);return h?h+' h '+m+' min':m+' min'};
 function renderHome(){
   const live=R.on?R.speed:S.speed;
@@ -255,7 +314,7 @@ function renderHome(){
   $('arc').style.opacity=live<.5?0:1;$('arc').setAttribute('stroke-dasharray',(Math.min(live,35)/35*100).toFixed(1)+' 100');
   const a=(135+270*S.applied/35)*Math.PI/180,cx=150,cy=145;
   $('limit').setAttribute('d',`M${cx+104*Math.cos(a)} ${cy+104*Math.sin(a)} L${cx+126*Math.cos(a)} ${cy+126*Math.sin(a)}`);
-  const r=D.batt/100*FULL_RANGE[S.mode];
+  const r=D.batt/100*fullRange();$('model').value=D.model;$('temp').value=D.temp;if(document.activeElement!==$('weight'))$('weight').value=D.weight;$('title').textContent=(MODELS[D.model]||MODELS.s4).name;renderPlan();
   $('batt').textContent=D.batt+'%';$('batbar').style.width=D.batt+'%';$('range').textContent='~'+Math.round(r)+' km';$('odo').textContent=Math.round(D.odo)+' km';
   $('b2').textContent=D.batt;$('battIn').value=D.batt;$('battIn').style.setProperty('--p',D.batt+'%');
   $('r2').textContent='~'+Math.round(r)+' km';
@@ -369,12 +428,48 @@ function renderService(){
   $('cLast').textContent=D.charges.length?new Date(D.charges[0]).toLocaleDateString([], {day:'numeric',month:'short'}):'–';
 }
 $('odoIn').onchange=e=>{D.odo=Math.max(0,+e.target.value||0);save();renderAll()};
-$('maint').onclick=e=>{const id=e.target.dataset.id;if(!id)return;D.done[id]=D.odo;save();renderService();toast('Marked done at '+Math.round(D.odo)+' km')};
-$('check').onchange=e=>{const i=e.target.dataset.c;if(i==null)return;D.check[i]=e.target.checked;save();if(CHECK.every((_,k)=>D.check[k]))toast('All checks done. Ride safe!')};
+$('maint').onclick=e=>{const id=e.target.dataset.id;if(!id)return;D.done[id]=D.odo;D.serviced=true;save();renderService();renderAch();toast('Marked done at '+Math.round(D.odo)+' km')};
+$('check').onchange=e=>{const i=e.target.dataset.c;if(i==null)return;D.check[i]=e.target.checked;save();renderAch();if(CHECK.every((_,k)=>D.check[k]))toast('All checks done. Ride safe!')};
 $('checkReset').onclick=()=>{D.check={};save();renderService()};
 $('charged').onclick=()=>{D.charges.unshift(Date.now());D.batt=100;save();renderAll();toast('Charge logged, battery set to 100%')};
 
-function renderAll(){renderHome();renderRide();renderStats();renderService()}
+// ---------- planner, charging ----------
+function renderPlan(){
+  const km=parseFloat($('tripKm').value)*(+$('tripRound').value),r=D.batt/100*fullRange(),v=$('verdict');
+  if(!(km>0)){v.className='verdict';v.textContent='Enter a distance to check.'}
+  else{const left=r-km,pct=Math.max(0,Math.round(left/fullRange()*100));
+    if(left>=r*.25&&left>2){v.className='verdict yes';v.innerHTML='Yes, easily<small>About '+pct+'% battery left when you arrive.</small>'}
+    else if(left>0){v.className='verdict maybe';v.innerHTML='Just about<small>You\u2019d arrive with around '+pct+'%. Eco mode will help.</small>'}
+    else{v.className='verdict no';v.innerHTML='No, charge first<small>You\u2019re about '+Math.ceil(-left)+' km short. Charge to at least '+Math.min(100,Math.ceil(km/fullRange()*100*1.15))+'%.</small>'}}
+  const h=(MODELS[D.model]||MODELS.s4).charge*(100-D.batt)/100;
+  $('chTime').textContent=D.batt>=100?'Full':fmtT(h*60);
+  $('chAt').textContent=D.batt>=100?'Now':new Date(Date.now()+h*36e5).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+}
+$('model').onchange=e=>{D.model=e.target.value;save();renderHome()};
+$('temp').onchange=e=>{D.temp=e.target.value;save();renderHome()};
+$('weight').onchange=e=>{D.weight=Math.min(150,Math.max(30,+e.target.value||75));save();renderHome()};
+$('tripKm').oninput=renderPlan;$('tripRound').onchange=renderPlan;
+
+// ---------- achievements ----------
+function renderAch(){
+  const all=D.trips.reduce((a,t)=>a+t.km,0),longest=D.trips.reduce((a,t)=>Math.max(a,t.km),0),days=new Set(D.trips.map(t=>new Date(t.t).toDateString()));
+  let streak=0;for(let d=new Date();days.has(d.toDateString());d.setDate(d.getDate()-1))streak++;
+  const A=[['\ud83d\udef4','First ride',D.trips.length>=1],['\ud83d\udd1f','10 rides',D.trips.length>=10],['\ud83d\udcaf','100 km total',all>=100],
+    ['\ud83c\udfc6','500 km total',all>=500],['\ud83d\udee3\ufe0f','15 km in one ride',longest>=15],['\ud83d\udd25','3-day streak',streak>=3],
+    ['\ud83d\udd27','Did a service',!!D.serviced],['\u2705','Full safety check',CHECK.every((_,k)=>D.check[k])],['\ud83c\udf0d','Saved 10 kg CO\u2082',all*.17>=10]];
+  $('ach').innerHTML=A.map(a=>`<div class="${a[2]?'got':''}"><b>${a[0]}</b><span>${a[1]}</span></div>`).join('');
+}
+
+// ---------- expenses ----------
+function renderExp(){
+  const tot=D.exps.reduce((a,e)=>a+e.amt,0);
+  $('eTotal').textContent=tot.toFixed(0);$('ePerKm').textContent=D.odo>0?(tot/D.odo).toFixed(2):'0';
+  $('exps').innerHTML=D.exps.map((e,i)=>`<div class="trip"><div><b>${e.name.replace(/[<>&]/g,'')}</b><div class="m">${new Date(e.t).toLocaleDateString([], {day:'numeric',month:'short',year:'numeric'})}</div></div><div style="text-align:right"><b>${e.amt.toFixed(0)}</b> <button class="small" data-x="${i}" style="padding:3px 8px;margin-left:4px">\u00d7</button></div></div>`).join('');
+}
+$('addExp').onclick=()=>{const n=(prompt('What did you pay for? (e.g. new tyre)')||'').trim();if(!n)return;const a=parseFloat(prompt('How much did it cost?')||'');if(!(a>=0))return;D.exps.unshift({t:Date.now(),name:n.slice(0,60),amt:a});save();renderExp();toast('Expense added')};
+$('exps').onclick=e=>{const i=e.target.dataset.x;if(i==null||!confirm('Delete this expense?'))return;D.exps.splice(+i,1);save();renderExp()};
+
+function renderAll(){renderHome();renderRide();renderStats();renderService();renderAch();renderExp()}
 renderAll();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
