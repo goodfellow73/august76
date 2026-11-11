@@ -145,6 +145,7 @@ nav button.on{color:var(--ac2)}
   <div class="card">
     <div class="lbl">My scooter</div>
     <select class="sel" id="model">
+      <option value="s1">Xiaomi Mi Electric Scooter 1S</option>
       <option value="s4">Xiaomi Electric Scooter 4</option>
       <option value="pro">Xiaomi Electric Scooter 4 Pro</option>
       <option value="pro2">Xiaomi Electric Scooter 4 Pro (2nd Gen)</option>
@@ -287,7 +288,7 @@ nav button.on{color:var(--ac2)}
 const $=id=>document.getElementById(id);
 const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const S={locked:false,light:false,mode:'drive',max:25,applied:25,speed:0,connected:false};
-const D=Object.assign({batt:80,odo:142,done:{tyre:80,bolts:0,brake:0,clean:0,bat:0,pro:0},trips:[],cost:0.5,alert:25,alertOn:false,park:null,charges:[],check:{},model:'s4',weight:75,temp:'warm',exps:[]},store.get('scooterData',{}));
+const D=Object.assign({batt:80,odo:142,done:{tyre:80,bolts:0,brake:0,clean:0,bat:0,pro:0},trips:[],cost:0.5,alert:25,alertOn:false,park:null,charges:[],check:{},model:'s1',weight:75,temp:'warm',exps:[]},store.get('scooterData',{}));
 const old=store.get('scooterM',null);if(old&&!store.get('scooterData',null)){D.odo=old.odo??D.odo;Object.assign(D.done,old.done||{})}
 const save=()=>store.set('scooterData',D);
 let ble=null,toastT;
@@ -301,7 +302,7 @@ document.querySelector('nav').onclick=e=>{const b=e.target.closest('button');if(
 
 // ---------- home ----------
 // Official Xiaomi specs (mi.com): rated range is measured at 75 kg, 15 km/h, flat road.
-const MODELS={s4:{name:'Scooter 4',range:35,charge:5,wh:275},pro:{name:'Scooter 4 Pro',range:55,charge:8.5,wh:446},pro2:{name:'Scooter 4 Pro (2nd Gen)',range:60,charge:9,wh:468},lite:{name:'Scooter 4 Lite',range:20,charge:4.5,wh:187},ultra:{name:'Scooter 4 Ultra',range:70,charge:6.5,wh:562}};
+const MODELS={s1:{name:'Mi Scooter 1S',range:30,charge:5.5,wh:275},s4:{name:'Scooter 4',range:35,charge:5,wh:275},pro:{name:'Scooter 4 Pro',range:55,charge:8.5,wh:446},pro2:{name:'Scooter 4 Pro (2nd Gen)',range:60,charge:9,wh:468},lite:{name:'Scooter 4 Lite',range:20,charge:4.5,wh:187},ultra:{name:'Scooter 4 Ultra',range:70,charge:6.5,wh:562}};
 function fullRange(){const m=MODELS[D.model]||MODELS.s4;
   const mode={eco:1.15,drive:1,sport:.8}[S.mode],w=Math.min(1.2,Math.max(.6,1-(D.weight-75)*.006)),t={warm:1,cool:.88,cold:.72}[D.temp];
   return m.range*.75*mode*w*t}
