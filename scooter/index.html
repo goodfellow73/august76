@@ -191,7 +191,7 @@ $('connect').onclick=async()=>{
     ble.addEventListener('gattserverdisconnected',()=>{S.connected=false;render()});
     S.connected=true;render();
     toast('Connected to '+(ble.name||'device')+'. Commands need Xiaomi pairing, which isn’t supported yet.');
-  }catch(e){if(e.name!=='NotFoundError')toast('Could not connect: '+e.message)}
+  }catch(e){if(e.name==='NotFoundError')return;if(e.name==='SecurityError'||/permissions policy/i.test(e.message))toast('Bluetooth is blocked on this page. Open the app from its GitHub Pages link in Chrome to connect.');else toast('Could not connect: '+e.message)}
 };
 
 // Demo ride simulation
